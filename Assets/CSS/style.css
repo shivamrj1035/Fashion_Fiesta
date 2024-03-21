@@ -7,14 +7,14 @@
 
     /* Colors */
     /* olor mode HSL(Hue,Saturation,Lightness) */
-    --first-color: hsl(176, 88%, 27%);
-    --first-color-alt: hsl(129, 44%, 94%);
-    --second-color: hsl(34, 94%, 87%);
-    --title-color: hsl(0, 0%, 13%);
-    --text-color: hsl(154, 13%, 32%);
-    --text-color-light: hsl(60, 1%, 56%);
-    --body-color: hsl(0, 0%, 100%);
-    --container-color: hsl(0, 0%, 93%);
+    --first-color: #76ABAE;
+    --first-color-alt:  #095d94e1;
+    --second-color: #31363F;
+    --title-color: white;
+    --text-color: #EEEEEE;
+    --text-color-light: #fdfdfde5;
+    --body-color: #222831;
+    --container-color: hsl(0, 2%, 25%);
     --border-color: hsl(129, 36%, 85%);
     --border-color-alt: hsl(113, 15%, 90%);
 
@@ -254,9 +254,11 @@ table {
 .header__search {
     width: 340px;
     position: relative;
+    border-color: var(--first-color);
+    padding-top: 2px;
 }
 
-.header_search .form_input {
+.header__search .form__input {
     width: 100%;
 }
 
@@ -426,6 +428,11 @@ btn--sm {
     font-size: var(--tiny-font-size);
 }
 
+.swiper-button-next i,
+.swiper-button-prev i{
+    color: var(--text-color);
+}
+
 .swiper-button-next::after,
 .swiper-button-prev::after {
     /* visibility: hidden; */
@@ -441,6 +448,9 @@ btn--sm {
     right: 0;
 }
 
+i{
+    color: var(--text-color);
+}
 
 /* ===================Products========================= */
 
@@ -544,7 +554,7 @@ btn--sm {
     content: attr(aria-label);
     bottom: 100%;
     background-color: var(--first-color);
-    color: var(--body-color);
+    color: var(--text-color);
     font-size: var(--tiny-font-size);
     /* font-weight: var(--weight-500); */
     white-space: nowrap;
@@ -616,6 +626,7 @@ btn--sm {
 .tab__btn.active-tab {
     color: var(--first-color);
     background-color: var(--second-color);
+    font-size: larger;
 }
 
 .tab__item:not(.active-tab) {
@@ -1626,9 +1637,7 @@ btn--sm {
         font-size: var(--large-font-size);
     }
     
-    .header__search .form__input {
-        border-color: var(--first-color);
-    }
+  
 
     .nav__menu-top,
     .nav__toggle {
