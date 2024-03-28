@@ -14,9 +14,12 @@
     <!-- =============== SWIPER CSS =============== -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="//www.campusshoes.com/cdn/shop/files/favicon-16x16.png?v=1636552327" type="image/png" />
     <!--=============== CSS ===============-->
     <link rel="stylesheet" href="Assets/CSS/style.css">
     <title>Evara Clothing Website</title>
+
 </head>
 
 <body>
@@ -42,10 +45,8 @@
         </div>
 
         <nav class="nav container">
-            <a href="index.html" class="nav__logo">
-                <img src="Assets/IMG/logo.svg" alt="" class="nav__logo-img">
-                <!-- REMAININGGGGGGGGGGGGGGGGGGG -->
-            </a>
+            
+            <a href="index.html" class="nav__logo"><img src="https://images.cooltext.com/5693691.png" class="nav__logo-img" width="mx-auto " height="50px" alt="Fashion-Fiesta" /></a>
 
             <div class="nav__menu" id="nav-menu">
                 <div class="nav__menu-top">
@@ -71,7 +72,23 @@
                     </li>
 
                     <li class="nav__item">
-                        <a href="compare.html" class="nav__link">Compare</a>
+                        <div class="dropdown">
+                            <a class="dropbtn nav__link">Mens <span class="dropdown-arrow"></span></a>
+                            <div class="dropdown-content">
+                              <a href="#">Clothing</a>
+                              <div class="dropdown-content">
+                                <a href="#">Topwear</a>
+                                <a href="#">Bottom wear</a>
+                              </div>
+                              <a href="#">Footwear</a>
+                              <div class="dropdown-content">
+                                <a href="#">Sneakers</a>
+                                <a href="#">Casual shoes</a>
+                              </div>
+                              <a href="#">Grooming <span class="badge">NEW</span></a>
+                              <a href="#">Inner Wear</a>
+                            </div>
+                          </div>
                     </li>
 
                     <li class="nav__item">
@@ -82,19 +99,19 @@
                 <div class="header__search">
                     <input type="text" placeholder="Search for items..." class="form__input">
                     <button class="search__btn">
-                        <img src="./Assets/IMG/search-line.png" alt="">
+                        <img src="./Assets/IMG/search.jpg" alt="">
                     </button>
                 </div>
             </div>
 
             <div class="header__user-actions">
                 <a href="wishlist.html" class="header__action-btn">
-                    <img src="Assets/IMG/heart-line.svg" alt="">
-                    <span class="count">3</span>
+                    <img src="Assets/IMG/wishlist.jpg" alt="" style="width: 33px;">
+                    <span class="count">0</span>
                 </a>
                 <a href="cart.html" class="header__action-btn">
-                    <img src="Assets/IMG/shopping-cart.svg" alt="">
-                    <span class="count">3</span>
+                    <img src="Assets/IMG/cart.jpg" alt="" style="width: 33px;">
+                    <span class="count">0</span>
                 </a>
 
                 <div class="header__action-btn nav__toggle" id="nav-toggle">
@@ -117,7 +134,26 @@
 
                 <!-- REMAINNNNNNNNNNNNNNNNNNNNNNNNNNNNGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG -->
                 <!-- JS APPLy -->
-                <img src="./Assets/IMG/ai_image_shivam.png" alt="" class="home__img">
+                <div class="carousel-container home__img">
+                    <div class="carousel">
+                      <div class="carousel-item">
+                        <img src="./Assets/IMG/category-1.jpg" alt="Image 1">
+                      </div>
+                      <div class="carousel-item">
+                        <img src="./Assets/IMG/category-2.jpg" alt="Image 2">
+                      </div>
+                      <div class="carousel-item">
+                        <img src="./Assets/IMG/category-3.jpg" alt="Image 3">
+                      </div>
+                      <div class="carousel-item">
+                        <img src="./Assets/IMG/category-4.jpg" alt="Image 4">
+                      </div>
+                      <div class="carousel-item">
+                        <img src="./Assets/IMG/category-5.jpg" alt="Image 5">
+                      </div>
+                    </div>
+                    <button class="carousel-btn prev" onclick="prevSlide()">Prev</button>
+                    <button class="carousel-btn next" onclick="nextSlide()">Next</button>
             </div>
         </div>
         <!-- =============== CATEGORIES =============== -->

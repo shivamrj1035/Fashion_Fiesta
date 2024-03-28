@@ -80,11 +80,11 @@
             <div class="header__user-actions">
                 <a href="wishlist.html" class="header__action-btn">
                     <img src="Assets/IMG/heart-line.svg" alt="">
-                    <span class="count">3</span>
+                    <span class="count" id="wishlistCount">0</span>
                 </a>
                 <a href="cart.html" class="header__action-btn">
                     <img src="Assets/IMG/shopping-cart.svg" alt="">
-                    <span class="count">3</span>
+                    <span class="count" id="cartCount">0</span>
                 </a>
             </div>
         </nav>
@@ -149,7 +149,7 @@
                             <span class="old__price">₹258.85</span>
                         </div>
 
-                        <a href="#" class="action__btn cart__btn" aria-label="Add to cart">
+                        <a href="#" class="action__btn cart__btn" onclick="addingToCart()" aria-label="Add to cart">
                             <i class="fi fi-rs-shopping-bag-add"></i>
                         </a>
                     </div>
@@ -197,7 +197,7 @@
                             <span class="old__price">₹258.85</span>
                         </div>
 
-                        <a href="#" class="action__btn cart__btn" aria-label="Add to cart">
+                        <a href="#" class="action__btn cart__btn" onclick="addingToCart()"  aria-label="Add to cart">
                             <i class="fi fi-rs-shopping-bag-add"></i>
                         </a>
                     </div>
@@ -245,7 +245,7 @@
                             <span class="old__price">₹258.85</span>
                         </div>
 
-                        <a href="#" class="action__btn cart__btn" aria-label="Add to cart">
+                        <a href="#" class="action__btn cart__btn"  onclick="addingToCart()"  aria-label="Add to cart">
                             <i class="fi fi-rs-shopping-bag-add"></i>
                         </a>
                     </div>
@@ -293,7 +293,7 @@
                             <span class="old__price">₹258.85</span>
                         </div>
 
-                        <a href="#" class="action__btn cart__btn" aria-label="Add to cart">
+                        <a href="#" class="action__btn cart__btn"  onclick="addingToCart()" aria-label="Add to cart">
                             <i class="fi fi-rs-shopping-bag-add"></i>
                         </a>
                     </div>
@@ -341,7 +341,7 @@
                             <span class="old__price">₹258.85</span>
                         </div>
 
-                        <a href="#" class="action__btn cart__btn" aria-label="Add to cart">
+                        <a href="#" class="action__btn cart__btn"  onclick="addingToCart()"  aria-label="Add to cart">
                             <i class="fi fi-rs-shopping-bag-add"></i>
                         </a>
                     </div>
@@ -389,7 +389,7 @@
                             <span class="old__price">₹258.85</span>
                         </div>
 
-                        <a href="#" class="action__btn cart__btn" aria-label="Add to cart">
+                        <a href="#" class="action__btn cart__btn"  onclick="addingToCart()"  aria-label="Add to cart">
                             <i class="fi fi-rs-shopping-bag-add"></i>
                         </a>
                     </div>
@@ -437,7 +437,7 @@
                             <span class="old__price">₹258.85</span>
                         </div>
 
-                        <a href="#" class="action__btn cart__btn" aria-label="Add to cart">
+                        <a href="#" class="action__btn cart__btn"  onclick="addingToCart()" aria-label="Add to cart">
                             <i class="fi fi-rs-shopping-bag-add"></i>
                         </a>
                     </div>
@@ -485,7 +485,7 @@
                             <span class="old__price">₹258.85</span>
                         </div>
 
-                        <a href="#" class="action__btn cart__btn" aria-label="Add to cart">
+                        <a href="#" class="action__btn cart__btn" onclick="addingToCart()"  aria-label="Add to cart">
                             <i class="fi fi-rs-shopping-bag-add"></i>
                         </a>
                     </div>
@@ -533,7 +533,7 @@
                             <span class="old__price">₹258.85</span>
                         </div>
 
-                        <a href="#" class="action__btn cart__btn" aria-label="Add to cart">
+                        <a href="#" class="action__btn cart__btn"  onclick="addingToCart()" aria-label="Add to cart">
                             <i class="fi fi-rs-shopping-bag-add"></i>
                         </a>
                     </div>
@@ -581,7 +581,7 @@
                             <span class="old__price">₹258.85</span>
                         </div>
 
-                        <a href="#" class="action__btn cart__btn" aria-label="Add to cart">
+                        <a href="#" class="action__btn cart__btn" onclick="addingToCart()"  aria-label="Add to cart">
                             <i class="fi fi-rs-shopping-bag-add"></i>
                         </a>
                     </div>
@@ -629,7 +629,7 @@
                             <span class="old__price">₹258.85</span>
                         </div>
 
-                        <a href="#" class="action__btn cart__btn" aria-label="Add to cart">
+                        <a href="#" class="action__btn cart__btn" onclick="addingToCart()"  aria-label="Add to cart">
                             <i class="fi fi-rs-shopping-bag-add"></i>
                         </a>
                     </div>
@@ -677,7 +677,7 @@
                             <span class="old__price">₹258.85</span>
                         </div>
 
-                        <a href="#" class="action__btn cart__btn" aria-label="Add to cart">
+                        <a href="#" class="action__btn cart__btn"  onclick="addingToCart()" aria-label="Add to cart">
                             <i class="fi fi-rs-shopping-bag-add"></i>
                         </a>
                     </div>
@@ -689,8 +689,9 @@
                 <li><a href="#" class="pagination__link active">01</a></li>
                 <li><a href="#" class="pagination__link">02</a></li>
                 <li><a href="#" class="pagination__link">03</a></li>
-                <li><a href="#" class="pagination__link">...</a></li>
-                <li><a href="#" class="pagination__link">16</a></li>
+                <li><a href="#" class="pagination__link">04</a></li>
+                <li><a href="#" class="pagination__link">05</a></li>
+                <li><a href="#" class="pagination__link">06</a></li>
                 <li><a href="#" class="pagination__link icon">
                     <i class="fi-rs-angle-double-small-right"></i>
                 </a></li>

@@ -124,3 +124,44 @@ tabs.forEach((tab) => {
     tab.classList.add('active-tab');
   });
 });
+
+
+// Add to the cart
+
+function addingToCart(){
+  let x= document.getElementById('cartCount');
+  let initCount = Number(x.innerHTML);
+  let newCount = initCount+1;
+  x.innerHTML = newCount;
+}
+
+// Carousel JS
+let slideIndex = 0;
+  const slides = document.querySelectorAll('.carousel-item');
+  const totalSlides = slides.length;
+
+  function showSlides() {
+    slides.forEach((slide) => {
+      slide.style.display = 'none';
+    });
+    slides[slideIndex].style.display = 'block';
+  }
+
+  function prevSlide() {
+    slideIndex = (slideIndex - 1 + totalSlides) % totalSlides;
+    showSlides();
+  }
+
+  function nextSlide() {
+    slideIndex = (slideIndex + 1) % totalSlides;
+    showSlides();
+  }
+
+  function autoSwipe() {
+    setInterval(() => {
+      nextSlide();
+    }, 1000);
+  }
+
+  showSlides();
+  autoSwipe();
