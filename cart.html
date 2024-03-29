@@ -80,11 +80,11 @@
             <div class="header__user-actions">
                 <a href="wishlist.html" class="header__action-btn">
                     <img src="Assets/IMG/heart-line.svg" alt="">
-                    <span class="count">3</span>
+                    <span class="count" id="wishCount"></span>
                 </a>
                 <a href="cart.html" class="header__action-btn">
                     <img src="Assets/IMG/shopping-cart.svg" alt="">
-                    <span class="count">3</span>
+                    <span class="count" id="cartCount"></span>
                 </a>
             </div>
         </nav>
@@ -103,7 +103,7 @@
         </section>
 
         <section class="cart section--lg container">
-            <div class="table__container">
+            <div class="table__container" id="cartTable">
                 <table class="table">
                     <tr>
                         <th>Image</th>
@@ -114,66 +114,68 @@
                         <th>Remove</th>
                     </tr>
 
-                    <tr>
-                        <td><img src="./Assets/IMG/product-1-1.jpg" alt="" class="table__img"></td>
-
-                        <td>
-                            <h3 class="table__title">J.Crew Tshirt</h3>
-                            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
-                        </td>
-
-                        <td><span class="table__price">$400</span></td>
-
-                        <td><input type="number" value="3" class="quantity"></td>
-
-                        <td>
-                            <span class="table__subtotal">$1200</span>
-                        </td>
-
-                        <td>
-                            <i class="fi fi-rs-trash table__trash"></i>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><img src="./Assets/IMG/product-2-1.jpg" alt="" class="table__img"></td>
-
-                        <td>
-                            <h3 class="table__title">J.Crew Tshirt</h3>
-                            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
-                        </td>
-
-                        <td><span class="table__price">$400</span></td>
-
-                        <td><input type="number" value="3" class="quantity"></td>
-
-                        <td>
-                            <span class="table__subtotal">$1200</span>
-                        </td>
-
-                        <td>
-                            <i class="fi fi-rs-trash table__trash"></i>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><img src="./Assets/IMG/product-7-1.jpg" alt="" class="table__img"></td>
-
-                        <td>
-                            <h3 class="table__title">J.Crew Tshirt</h3>
-                            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
-                        </td>
-
-                        <td><span class="table__price">$400</span></td>
-
-                        <td><input type="number" value="3" class="quantity"></td>
-
-                        <td>
-                            <span class="table__subtotal">$1200</span>
-                        </td>
-
-                        <td>
-                            <i class="fi fi-rs-trash table__trash"></i>
-                        </td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <td><img src="./Assets/IMG/product-1-1.jpg" alt="" class="table__img"></td>
+    
+                            <td>
+                                <h3 class="table__title">J.Crew Tshirt</h3>
+                                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
+                            </td>
+    
+                            <td><span class="table__price">$400</span></td>
+    
+                            <td><input type="number" value="3" class="quantity"></td>
+    
+                            <td>
+                                <span class="table__subtotal">$1200</span>
+                            </td>
+    
+                            <td>
+                                <i class="fi fi-rs-trash table__trash" onclick="removeItem(this)"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><img src="./Assets/IMG/product-2-1.jpg" alt="" class="table__img"></td>
+    
+                            <td>
+                                <h3 class="table__title">J.Crew Tshirt</h3>
+                                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
+                            </td>
+    
+                            <td><span class="table__price">$400</span></td>
+    
+                            <td><input type="number" value="3" class="quantity"></td>
+    
+                            <td>
+                                <span class="table__subtotal">$1200</span>
+                            </td>
+    
+                            <td>
+                                <i class="fi fi-rs-trash table__trash" onclick="removeItem(this)"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><img src="./Assets/IMG/product-7-1.jpg" alt="" class="table__img"></td>
+    
+                            <td>
+                                <h3 class="table__title">J.Crew Tshirt</h3>
+                                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
+                            </td>
+    
+                            <td><span class="table__price">$400</span></td>
+    
+                            <td><input type="number" value="3" class="quantity"></td>
+    
+                            <td>
+                                <span class="table__subtotal">$1200</span>
+                            </td>
+    
+                            <td>
+                                <i class="fi fi-rs-trash table__trash" onclick="removeItem(this)"></i>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
 
@@ -361,7 +363,7 @@
 
 
     <!-- =============== MAIN JS =============== -->
-    <script src="Assets/js/main.js"></script>
+    <script src="./Assets/js/main.js"></script>
 
 </body>
 
