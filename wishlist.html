@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fashion Fiesta</title>
-
+    <link rel="shortcut icon" href="./Assets/IMG/flat.jpg"/>
     <!-- FLATICON -->
     <link rel='stylesheet'
         href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-straight/css/uicons-regular-straight.css'>
@@ -20,10 +20,11 @@
     <header class="header">
         <div class="header__top">
             <div class="header__container container">
+
                 <div class="header__contact">
                     <span>(+91) - 9054401780</span>
 
-                    <span>Our location</span>
+                    <span>Ahmedabad</span>
                 </div>
 
                 <p class="header__alert-news">
@@ -37,52 +38,91 @@
         </div>
 
         <nav class="nav container">
-            <a href="index.html" class="nav__logo">
-                <img src="Assets/IMG/logo.svg" alt="" class="nav__logo-img">
-                <!-- REMAININGGGGGGGGGGGGGGGGGGG -->
-            </a>
+
+            <a href="index.html" class="nav__logo"><img src="./Assets/IMG/logo2.png"
+                class="nav__logo-img" width="mx-auto " height="50px" alt="Fashion-Fiesta" /></a>
 
             <div class="nav__menu" id="nav-menu">
+                <div class="nav__menu-top">
+                    <a href="index.html" class="nav__menu-logo">
+                        <img src="./Assets/IMG/logo.svg" alt="">
+                    </a>
+
+                    <div class="nav__close" id="nav-close">
+                        <i class="fi fi-rs-cross"></i>
+                    </div>
+                </div>
                 <ul class="nav__list">
                     <li class="nav__item">
-                        <a href="index.html" class="nav__link ">Home</a>
+                        <a href="index.html" class="nav__link active-link">Home</a>
                     </li>
 
                     <li class="nav__item">
-                        <a href="shop.html" class="nav__link active-link">Shop</a>
+                        <a href="shop.html" class="nav__link ">Shop</a>
                     </li>
 
                     <li class="nav__item">
                         <a href="accounts.html" class="nav__link">My Account</a>
                     </li>
 
+
+                    
+
                     <li class="nav__item">
-                        <a href="compare.html" class="nav__link">Compare</a>
+                        <div class="dropdown">
+                            <a class="dropbtn nav__link">Men <span class="dropdown-arrow"></span></a>
+                            <div class="dropdown-content">
+                                <a href="./shop.html">Topwear</a>
+                                <a href="./shop.html">Bottom wear</a>
+                                <a href="./shop.html">Footwear</a>
+                                <a href="./shop.html">Bags</a>
+                                <a href="./shop.html">Inner Wear</a>
+                                <a href="./shop.html">Summer Special</a>
+                                <a href="./shop.html">Watches</a>
+                            </div>
+                        </div>
                     </li>
 
                     <li class="nav__item">
-                        <a href="login-register.html" class="nav__link ">Login</a>
+                        <div class="dropdown">
+                            <a class="dropbtn nav__link">Women <span class="dropdown-arrow"></span></a>
+                            <div class="dropdown-content">
+                                <a href="./shop.html">Topwear</a>
+                                <a href="./shop.html">Bottom wear</a>
+                                <a href="./shop.html">Footwear</a>
+                                <a href="./shop.html">Purse</a>
+                                <a href="./shop.html">Summer Special</a>
+                                <a href="./shop.html">Inner Wear</a>
+                                <a href="./shop.html">Jewellary</a>
+                                <a href="./shop.html">Cosmetics</a>
+
+                            </div>
+                        </div>
                     </li>
+
                 </ul>
 
                 <div class="header__search">
                     <input type="text" placeholder="Search for items..." class="form__input">
-
                     <button class="search__btn">
-                        <img src="Assets/IMG/search-line.png" alt="">
+                        <img src="./Assets/IMG/search-line.png" alt="">
                     </button>
                 </div>
             </div>
 
             <div class="header__user-actions">
                 <a href="wishlist.html" class="header__action-btn">
-                    <img src="Assets/IMG/heart-line.svg" alt="">
-                    <span class="count">3</span>
+                    <img src="Assets/IMG/heart-line.svg" alt="" style="width: 33px;">
+                    <span class="count" id="wishCount">3</span>
                 </a>
                 <a href="cart.html" class="header__action-btn">
-                    <img src="Assets/IMG/shopping-cart.svg" alt="">
-                    <span class="count">3</span>
+                    <img src="Assets/IMG/shopping-cart.svg" alt="" style="width: 33px;">
+                    <span class="count" id="cartCount">0</span>
                 </a>
+
+                <div class="header__action-btn nav__toggle" id="nav-toggle">
+                    <img src="./Assets/IMG/menu-burger.svg" alt="">
+                </div>
             </div>
         </nav>
     </header>
@@ -102,7 +142,7 @@
         <!-- Wishlist -->
  
         <section class="wishlist section--lg container">
-            <div class="table__container">
+            <div class="table__container" id="wishTable">
                 <table class="table">
                     <tr>
                         <th>Image</th>
@@ -113,60 +153,62 @@
                         <th>Remove</th>
                     </tr>
 
-                    <tr>
-                        <td><img src="./Assets/IMG/product-1-1.jpg" alt="" class="table__img"></td>
-
-                        <td>
-                            <h3 class="table__title">J.Crew Tshirt</h3>
-                            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
-                        </td>
-
-                        <td><span class="table__price">$400</span></td>
-
-                        <td><span class="table__stock">In Stock</span></td>
-
-                        <td><a href="" class="btn btn btn--sm">Add to Cart</a></td>
-                        <td>
-                            <i class="fi fi-rs-trash table__trash"></i>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><img src="./Assets/IMG/product-2-1.jpg" alt="" class="table__img"></td>
-
-                        <td>
-                            <h3 class="table__title">J.Crew Tshirt</h3>
-                            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
-                        </td>
-
-                        <td><span class="table__price">$400</span></td>
-
-                        
-                        <td><span class="table__stock">In Stock</span></td>
-
-                        <td><a href="" class="btn btn btn--sm">Add to Cart</a></td>
-                        <td>
-                            <i class="fi fi-rs-trash table__trash"></i>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><img src="./Assets/IMG/product-7-1.jpg" alt="" class="table__img"></td>
-
-                        <td>
-                            <h3 class="table__title">J.Crew Tshirt</h3>
-                            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
-                        </td>
-
-                        <td><span class="table__price">$400</span></td>
-
-                        
-                        <td><span class="table__stock">In Stock</span></td>
-
-                        <td><a href="" class="btn btn btn--sm">Add to Cart</a></td>
-
-                        <td>
-                            <i class="fi fi-rs-trash table__trash"></i>
-                        </td>
-                    </tr>
+                    <tbody>
+                        <tr>
+                            <td><img src="./Assets/IMG/product-1-1.jpg" alt="" class="table__img"></td>
+    
+                            <td>
+                                <h3 class="table__title">J.Crew Tshirt</h3>
+                                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
+                            </td>
+    
+                            <td><span class="table__price">$400</span></td>
+    
+                            <td><span class="table__stock">In Stock</span></td>
+    
+                            <td><a href="" class="btn btn btn--sm">Add to Cart</a></td>
+                            <td>
+                                <i class="fi fi-rs-trash table__trash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><img src="./Assets/IMG/product-2-1.jpg" alt="" class="table__img"></td>
+    
+                            <td>
+                                <h3 class="table__title">J.Crew Tshirt</h3>
+                                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
+                            </td>
+    
+                            <td><span class="table__price">$400</span></td>
+    
+                            
+                            <td><span class="table__stock">In Stock</span></td>
+    
+                            <td><a href="" class="btn btn btn--sm">Add to Cart</a></td>
+                            <td>
+                                <i class="fi fi-rs-trash table__trash"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><img src="./Assets/IMG/product-7-1.jpg" alt="" class="table__img"></td>
+    
+                            <td>
+                                <h3 class="table__title">J.Crew Tshirt</h3>
+                                <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
+                            </td>
+    
+                            <td><span class="table__price">$400</span></td>
+    
+                            
+                            <td><span class="table__stock">In Stock</span></td>
+    
+                            <td><a href="" class="btn btn btn--sm">Add to Cart</a></td>
+    
+                            <td>
+                                <i class="fi fi-rs-trash table__trash"></i>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
 
@@ -199,15 +241,15 @@
 
                 <h4 class="footer__subtitle">Contact</h4>
                 <p class="footer__desciption">
-                    <span>Address:</span> ...............................
+                    <span>Address:</span> LJ College, Ahmedabad, 382210
                 </p>
 
                 <p class="footer__desciption">
-                    <span>Phone:</span> ...............................
+                    <span>Phone:</span> 9054401780
                 </p>
 
                 <p class="footer__desciption">
-                    <span>Hours:</span> ...............................
+                    <span>Source code(for Dev):</span> <a href="https://github.com/shivamrj1035/Fashion_Fiesta" class="" target="_blank">Github Code</a>
                 </p>
 
                 <div class="footer__social">
@@ -215,19 +257,19 @@
                         Follow Me
                     </h4>
                     <div class="footer__social-links">
-                        <a href="">
+                        <a href="https://www.linkedin.com/in/shivam-jayswal-590a1425b">
                             <img src="./Assets/IMG/icon-facebook.svg" class="footer__social-icon" alt="">
                         </a>
-                        <a href="">
+                        <a href="https://www.linkedin.com/in/shivam-jayswal-590a1425b">
                             <img src="./Assets/IMG/icon-twitter.svg" class="footer__social-icon" alt="">
                         </a>
-                        <a href="">
+                        <a href="https://www.instagram.com/shivamrj_1035/?utm_source=qr">
                             <img src="./Assets/IMG/icon-instagram.svg" class="footer__social-icon" alt="">
                         </a>
-                        <a href="">
+                        <a href="https://www.linkedin.com/in/shivam-jayswal-590a1425b">
                             <img src="./Assets/IMG/icon-pinterest.svg" class="footer__social-icon" alt="">
                         </a>
-                        <a href="">
+                        <a href="https://www.linkedin.com/in/shivam-jayswal-590a1425b">
                             <img src="./Assets/IMG/icon-youtube.svg" class="footer__social-icon" alt="">
                         </a>
                     </div>
@@ -265,7 +307,7 @@
         </div>
 
         <div class="footer__bottom">
-            <p class="copyright">&copy; 2024 CompanyName. All rights reserved</p>
+            <p class="copyright">&copy; Fashion Fiesta. All rights reserved</p>
             <span class="designer">Designed by Shivam Jayswal</span>
         </div>
     </footer>

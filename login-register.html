@@ -5,8 +5,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="./Assets/CSS/style.css" />
-    <title>Sign in & Sign up Form</title>
+    <link rel="stylesheet" href="./Assets/CSS/style_login.css" />
+    <title>Fashion Fiesta</title>
+    <link rel="shortcut icon" href="./Assets/IMG/flat.jpg"/>
 </head>
 
 <body>
@@ -19,7 +20,7 @@
                 <div class="header__contact">
                     <span>(+91) - 9054401780</span>
 
-                    <span>Our location</span>
+                    <span>Ahmedabad</span>
                 </div>
 
                 <p class="header__alert-news">
@@ -34,7 +35,8 @@
 
         <nav class="nav container">
             
-            <a href="index.html" class="nav__logo"><img src="https://images.cooltext.com/5693691.png" class="nav__logo-img" width="mx-auto " height="50px" alt="Fashion-Fiesta" /></a>
+            <a href="index.html" class="nav__logo"><img src="./Assets/IMG/logo2.png"
+                class="nav__logo-img" width="mx-auto " height="50px" alt="Fashion-Fiesta" /></a>
 
             <div class="nav__menu" id="nav-menu">
                 <div class="nav__menu-top">
@@ -55,33 +57,6 @@
                         <a href="shop.html" class="nav__link ">Shop</a>
                     </li>
 
-                    <li class="nav__item">
-                        <a href="accounts.html" class="nav__link">My Account</a>
-                    </li>
-
-                    <li class="nav__item">
-                        <div class="dropdown">
-                            <a class="dropbtn nav__link">Mens <span class="dropdown-arrow"></span></a>
-                            <div class="dropdown-content">
-                              <a href="#">Clothing</a>
-                              <div class="dropdown-content">
-                                <a href="#">Topwear</a>
-                                <a href="#">Bottom wear</a>
-                              </div>
-                              <a href="#">Footwear</a>
-                              <div class="dropdown-content">
-                                <a href="#">Sneakers</a>
-                                <a href="#">Casual shoes</a>
-                              </div>
-                              <a href="#">Grooming <span class="badge">NEW</span></a>
-                              <a href="#">Inner Wear</a>
-                            </div>
-                          </div>
-                    </li>
-
-                    <li class="nav__item">
-                        <a href="login-register.html" class="nav__link ">Login</a>
-                    </li>
                 </ul>
 
                 <div class="header__search">
@@ -95,7 +70,7 @@
             <div class="header__user-actions">
                 <a href="wishlist.html" class="header__action-btn">
                     <img src="Assets/IMG/heart-line.svg" alt="" style="width: 33px;">
-                    <span class="count">0</span>
+                    <span class="count">3</span>
                 </a>
                 <a href="cart.html" class="header__action-btn">
                     <img src="Assets/IMG/shopping-cart.svg" alt="" style="width: 33px;">
@@ -111,15 +86,15 @@
     <div class="containerLogin">
         <div class="forms-container">
             <div class="signin-signup">
-                <form action="#" class="sign-in-form">
+                <form action="#" class="sign-in-form" id="signInForm">
                     <h2 class="title">Sign in</h2>
                     <div class="input-field">
                         <i class="fas fa-user"></i>
-                        <input type="text" placeholder="Username" />
+                        <input type="text" placeholder="Username" id="username" required />
                     </div>
                     <div class="input-field">
                         <i class="fas fa-lock"></i>
-                        <input type="password" placeholder="Password" />
+                        <input type="password" placeholder="Password" id="password" required />
                     </div>
                     <input type="submit" value="Login" class="btn solid" />
                     <p class="social-text">Or Sign in with social platforms</p>
@@ -138,6 +113,7 @@
                         </a>
                     </div>
                 </form>
+                
                 <form action="#" class="sign-up-form">
                     <h2 class="title">Sign up</h2>
                     <div class="input-field">
