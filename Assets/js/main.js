@@ -16,7 +16,7 @@ if(navToggle) {
 
 // validate if constant exists
 if(navClose) {
-  navClose.addEventListener('click', () => {
+  navClose.addEventListener('mouseover', () => {
     navMenu.classList.remove('show-menu')
   })
 }
@@ -27,7 +27,7 @@ function imgGallery() {
     smallImg = document.querySelectorAll('.details__small-img');
 
   smallImg.forEach((img) => {
-    img.addEventListener('click', function () {
+    img.addEventListener('mouseover', function () {
       mainImg.src = this.src;
     });
   });
@@ -124,16 +124,6 @@ tabs.forEach((tab) => {
     tab.classList.add('active-tab');
   });
 });
-
-
-// Add to the cart
-
-function addingToCart(){
-  let x= document.getElementById('cartCount');
-  let initCount = Number(x.innerHTML);
-  let newCount = initCount+1;
-  x.innerHTML = newCount;
-}
 
 // Carousel JS
 let slideIndex = 0;
