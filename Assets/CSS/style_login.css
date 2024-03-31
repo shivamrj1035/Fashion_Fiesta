@@ -283,6 +283,7 @@ table {
 
 .header__action-btn img {
     width: 24px;
+    cursor: pointer;
 }
 
 .header__action-btn .count {
@@ -847,7 +848,7 @@ form.sign-in-form {
     }
 
     .nav__menu-logo img {
-        width: 100px;
+        width: 210px;
     }
 
     .nav__close {
@@ -857,6 +858,7 @@ form.sign-in-form {
 
     .header__action-btn img {
         width: 21px;
+        cursor: pointer;
     }
 
     .home__container {
