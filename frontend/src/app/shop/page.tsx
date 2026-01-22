@@ -62,11 +62,11 @@ export default function ShopPage() {
             <Navbar />
 
             {/* Breadcrumbs */}
-            <div className="bg-white border-b border-slate-100 py-3 mb-6">
-                <div className="container flex items-center space-x-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    <Link href="/" className="hover:text-first-color transition-colors">Home</Link>
-                    <ChevronRight className="w-3 h-3" />
-                    <span className="text-slate-900">Shop</span>
+            <div className="bg-white border-b border-slate-100 py-3 mb-6 sticky top-[73px] z-40 shadow-sm">
+                <div className="container flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest">
+                    <Link href="/" className="text-slate-900 hover:text-first-color transition-colors">Home</Link>
+                    <ChevronRight className="w-3 h-3 text-slate-400" />
+                    <span className="text-first-color">Shop</span>
                 </div>
             </div>
 
@@ -74,7 +74,7 @@ export default function ShopPage() {
                 <div className="flex flex-col lg:flex-row gap-8">
 
                     {/* Sidebar Filters */}
-                    <aside className="lg:w-1/4 space-y-8">
+                    <aside className="lg:w-1/4 space-y-8 sticky top-[130px] h-[calc(100vh-130px)] overflow-y-auto pr-2">
                         <div>
                             <h4 className="text-sm font-black tracking-tighter mb-4 uppercase text-slate-900">Search</h4>
                             <div className="relative">
@@ -125,7 +125,7 @@ export default function ShopPage() {
                             )}
                         </div>
 
-                        <div className="p-6 bg-slate-900 rounded-[2rem] text-white overflow-hidden relative group cursor-pointer sticky top-24">
+                        <div className="p-6 bg-slate-900 rounded-[2rem] text-white overflow-hidden relative group cursor-pointer">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-700" />
                             <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 relative z-10">Offer</span>
                             <h3 className="text-xl font-black mt-2 leading-tight relative z-10">Summer Sale <br /> <span className="text-slate-400">Up to 70% off</span></h3>
