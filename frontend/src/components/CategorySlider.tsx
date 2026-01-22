@@ -50,30 +50,34 @@ export default function CategorySlider() {
 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
                     {CATEGORIES.map((cat, index) => (
-                        <motion.div
+                        <Link
                             key={cat.name}
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.05, duration: 0.5 }}
-                            viewport={{ once: true }}
-                            className="group cursor-pointer"
+                            href={`/shop?category=${encodeURIComponent(cat.name)}`}
+                            className="group cursor-pointer block"
                         >
-                            <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] mb-6 shadow-sm border border-slate-100 transition-all duration-700 group-hover:shadow-2xl group-hover:-translate-y-2">
-                                <Image
-                                    src={cat.image}
-                                    alt={cat.name}
-                                    fill
-                                    className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                                />
-                                <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors" />
-                            </div>
-                            <h3 className="font-bold text-center text-slate-800 text-lg transition-colors group-hover:text-first-color">
-                                {cat.name}
-                            </h3>
-                            <p className="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest mt-2">
-                                {cat.items}
-                            </p>
-                        </motion.div>
+                            <motion.div
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.05, duration: 0.5 }}
+                                viewport={{ once: true }}
+                            >
+                                <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] mb-6 shadow-sm border border-slate-100 transition-all duration-700 group-hover:shadow-2xl group-hover:-translate-y-2">
+                                    <Image
+                                        src={cat.image}
+                                        alt={cat.name}
+                                        fill
+                                        className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                                    />
+                                    <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-colors" />
+                                </div>
+                                <h3 className="font-bold text-center text-slate-800 text-lg transition-colors group-hover:text-first-color">
+                                    {cat.name}
+                                </h3>
+                                <p className="text-[10px] text-center text-slate-400 font-bold uppercase tracking-widest mt-2">
+                                    {cat.items}
+                                </p>
+                            </motion.div>
+                        </Link>
                     ))}
                 </div>
             </div>
