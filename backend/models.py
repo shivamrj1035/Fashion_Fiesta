@@ -34,6 +34,7 @@ class ProductBase(SQLModel):
     is_new: bool = Field(default=False, index=True)
     image_urls: List[str] = Field(default=[], sa_column=Column(JSON))
     attributes: Dict = Field(default={}, sa_column=Column(JSON)) # For Amazon-like flexibility
+    embedding: List[float] = Field(default=[], sa_column=Column(JSON)) # For recommendation system
 
 class Product(ProductBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
