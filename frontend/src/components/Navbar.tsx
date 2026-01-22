@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingCart, Heart, Search, User, Menu, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 const NAV_LINKS = [
     { name: "Home", href: "/" },
@@ -22,6 +24,8 @@ export default function Navbar() {
     const [searchOpen, setSearchOpen] = useState(false);
     const { user: currentUser, logout } = useAuth();
     const pathname = usePathname();
+    const { totalItems } = useCart();
+    const { wishlistCount } = useWishlist();
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -102,12 +106,34 @@ export default function Navbar() {
 
                     <Link href="/wishlist" className="relative p-2 text-slate-700 hover:text-first-color transition-all transform hover:scale-110">
                         <Heart className="w-4.5 h-4.5" />
-                        <span className="absolute top-1 right-1 bg-first-color text-white text-[9px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm">3</span>
+                        <AnimatePresence>
+                            {wishlistCount > 0 && (
+                                <motion.span
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    exit={{ scale: 0 }}
+                                    className="absolute top-0 right-0 z-10 bg-first-color text-white text-[9px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm translate-x-1 -translate-y-1"
+                                >
+                                    {wishlistCount}
+                                </motion.span>
+                            )}
+                        </AnimatePresence>
                     </Link>
 
                     <Link href="/cart" className="relative p-2 text-slate-700 hover:text-first-color transition-all transform hover:scale-110">
                         <ShoppingCart className="w-4.5 h-4.5" />
-                        <span className="absolute top-1 right-1 bg-first-color text-white text-[9px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm">5</span>
+                        <AnimatePresence>
+                            {totalItems > 0 && (
+                                <motion.span
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    exit={{ scale: 0 }}
+                                    className="absolute top-0 right-0 z-10 bg-first-color text-white text-[9px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm translate-x-1 -translate-y-1"
+                                >
+                                    {totalItems}
+                                </motion.span>
+                            )}
+                        </AnimatePresence>
                     </Link>
 
                     {currentUser ? (
