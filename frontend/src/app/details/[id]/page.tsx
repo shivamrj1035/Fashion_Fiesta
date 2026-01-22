@@ -9,12 +9,16 @@ import { Star, Minus, Plus, ShoppingBag, Truck, ShieldCheck, ArrowRight, RotateC
 import { cn } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import { useProduct } from "@/hooks/useProducts";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 export default function ProductDetailsPage() {
     const params = useParams();
     const id = Number(params.id);
 
     const { data: product, isLoading } = useProduct(id);
+    const { addToCart } = useCart();
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
     const [activeImg, setActiveImg] = useState(0);
     const [quantity, setQuantity] = useState(1);
@@ -103,8 +107,14 @@ export default function ProductDetailsPage() {
                                     <span className="text-slate-400 text-[10px] font-bold uppercase tracking-wide">Rating</span>
                                 </div>
                                 <div className="flex space-x-2">
-                                    <button className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-colors">
-                                        <Heart className="w-4 h-4" />
+                                    <button
+                                        onClick={() => isInWishlist(product.id) ? removeFromWishlist(product.id) : addToWishlist(product)}
+                                        className={cn(
+                                            "w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center transition-colors border border-slate-100",
+                                            isInWishlist(product.id) ? "text-first-color bg-emerald-50" : "text-slate-400 hover:bg-rose-50 hover:text-rose-500"
+                                        )}
+                                    >
+                                        <Heart className={cn("w-4 h-4", isInWishlist(product.id) && "fill-current")} />
                                     </button>
                                     <button className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-blue-50 hover:text-blue-500 transition-colors">
                                         <Share2 className="w-4 h-4" />
@@ -194,7 +204,10 @@ export default function ProductDetailsPage() {
                                     </button>
                                 </div>
 
-                                <button className="flex-1 btn-primary flex items-center justify-center text-base gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5 py-3">
+                                <button
+                                    onClick={() => addToCart(product, quantity)}
+                                    className="flex-1 btn-primary flex items-center justify-center text-base gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5 py-3"
+                                >
                                     <ShoppingBag className="w-5 h-5" />
                                     <span>Add to Cart</span>
                                 </button>

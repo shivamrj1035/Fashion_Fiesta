@@ -1,11 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Heart, Search, User, Menu, X, ChevronDown } from "lucide-react";
+import { ShoppingCart, Heart, Search, User, Menu, X, ChevronDown, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
+import ImageSearch from "./ImageSearch";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 const NAV_LINKS = [
     { name: "Home", href: "/" },
@@ -19,7 +23,11 @@ export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
+    const [imageSearchOpen, setImageSearchOpen] = useState(false);
     const { user: currentUser, logout } = useAuth();
+    const pathname = usePathname();
+    const { totalItems } = useCart();
+    const { wishlistCount } = useWishlist();
 
     useEffect(() => {
         const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -49,37 +57,44 @@ export default function Navbar() {
 
                 {/* Desktop Navigation */}
                 <ul className="hidden md:flex items-center space-x-8">
-                    {NAV_LINKS.map((link, index) => (
-                        <motion.li
-                            key={link.name}
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className="relative group"
-                        >
-                            <Link
-                                href={link.href}
-                                className="text-sm font-bold text-slate-700 hover:text-first-color transition-colors flex items-center group-hover:scale-105 transform duration-300"
-                            >
-                                {link.name}
-                                {link.items && <ChevronDown className="ml-1 w-3.5 h-3.5 transition-transform group-hover:rotate-180" />}
-                            </Link>
+                    {NAV_LINKS.map((link, index) => {
+                        const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
 
-                            {link.items && (
-                                <div className="absolute top-full left-0 mt-3 w-48 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.1)] rounded-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 border border-slate-50">
-                                    {link.items.map((item) => (
-                                        <Link
-                                            key={item}
-                                            href={`${link.href}&sub=${item.toLowerCase()}`}
-                                            className="block px-5 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-first-color transition-colors"
-                                        >
-                                            {item}
-                                        </Link>
-                                    ))}
-                                </div>
-                            )}
-                        </motion.li>
-                    ))}
+                        return (
+                            <motion.li
+                                key={link.name}
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                className="relative group"
+                            >
+                                <Link
+                                    href={link.href}
+                                    className={cn(
+                                        "text-sm font-bold transition-colors flex items-center transform duration-300",
+                                        isActive ? "text-first-color" : "text-black hover:text-first-color group-hover:scale-105"
+                                    )}
+                                >
+                                    {link.name}
+                                    {link.items && <ChevronDown className="ml-1 w-3.5 h-3.5 transition-transform group-hover:rotate-180" />}
+                                </Link>
+
+                                {link.items && (
+                                    <div className="absolute top-full left-0 mt-3 w-48 bg-white shadow-[0_10px_40px_rgba(0,0,0,0.1)] rounded-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 border border-slate-50">
+                                        {link.items.map((item) => (
+                                            <Link
+                                                key={item}
+                                                href={`${link.href}&sub=${item.toLowerCase()}`}
+                                                className="block px-5 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-first-color transition-colors"
+                                            >
+                                                {item}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </motion.li>
+                        )
+                    })}
                 </ul>
 
                 {/* Actions */}
@@ -91,14 +106,44 @@ export default function Navbar() {
                         <Search className="w-4.5 h-4.5" />
                     </button>
 
+                    <button
+                        onClick={() => setImageSearchOpen(true)}
+                        className="p-2 text-slate-700 hover:text-first-color transition-all transform hover:scale-110"
+                        title="Search by Image"
+                    >
+                        <Camera className="w-4.5 h-4.5" />
+                    </button>
+
                     <Link href="/wishlist" className="relative p-2 text-slate-700 hover:text-first-color transition-all transform hover:scale-110">
                         <Heart className="w-4.5 h-4.5" />
-                        <span className="absolute top-1 right-1 bg-first-color text-white text-[9px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm">3</span>
+                        <AnimatePresence>
+                            {wishlistCount > 0 && (
+                                <motion.span
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    exit={{ scale: 0 }}
+                                    className="absolute top-0 right-0 z-10 bg-first-color text-white text-[9px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm translate-x-1 -translate-y-1"
+                                >
+                                    {wishlistCount}
+                                </motion.span>
+                            )}
+                        </AnimatePresence>
                     </Link>
 
                     <Link href="/cart" className="relative p-2 text-slate-700 hover:text-first-color transition-all transform hover:scale-110">
                         <ShoppingCart className="w-4.5 h-4.5" />
-                        <span className="absolute top-1 right-1 bg-first-color text-white text-[9px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm">5</span>
+                        <AnimatePresence>
+                            {totalItems > 0 && (
+                                <motion.span
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    exit={{ scale: 0 }}
+                                    className="absolute top-0 right-0 z-10 bg-first-color text-white text-[9px] font-black w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-sm translate-x-1 -translate-y-1"
+                                >
+                                    {totalItems}
+                                </motion.span>
+                            )}
+                        </AnimatePresence>
                     </Link>
 
                     {currentUser ? (
@@ -170,7 +215,10 @@ export default function Navbar() {
                         </ul>
                     </motion.div>
                 )}
+
             </AnimatePresence>
+
+            <ImageSearch isOpen={imageSearchOpen} onClose={() => setImageSearchOpen(false)} />
         </header>
     );
 }
