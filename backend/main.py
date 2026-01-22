@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api import products, auth
+from api import products, auth, search
 from database import init_db
 
 app = FastAPI(title="Fashion Fiesta API", version="1.0.0")
@@ -20,6 +20,7 @@ async def on_startup():
 
 app.include_router(products.router)
 app.include_router(auth.router)
+app.include_router(search.router)
 
 @app.get("/")
 async def root():

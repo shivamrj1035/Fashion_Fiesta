@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Heart, Search, User, Menu, X, ChevronDown } from "lucide-react";
+import { ShoppingCart, Heart, Search, User, Menu, X, ChevronDown, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
+import ImageSearch from "./ImageSearch";
 
 const NAV_LINKS = [
     { name: "Home", href: "/" },
@@ -19,6 +20,7 @@ export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
+    const [imageSearchOpen, setImageSearchOpen] = useState(false);
     const { user: currentUser, logout } = useAuth();
 
     useEffect(() => {
@@ -89,6 +91,14 @@ export default function Navbar() {
                         className="p-2 text-slate-700 hover:text-first-color transition-all transform hover:scale-110"
                     >
                         <Search className="w-4.5 h-4.5" />
+                    </button>
+
+                    <button
+                        onClick={() => setImageSearchOpen(true)}
+                        className="p-2 text-slate-700 hover:text-first-color transition-all transform hover:scale-110"
+                        title="Search by Image"
+                    >
+                        <Camera className="w-4.5 h-4.5" />
                     </button>
 
                     <Link href="/wishlist" className="relative p-2 text-slate-700 hover:text-first-color transition-all transform hover:scale-110">
@@ -170,7 +180,10 @@ export default function Navbar() {
                         </ul>
                     </motion.div>
                 )}
+
             </AnimatePresence>
+
+            <ImageSearch isOpen={imageSearchOpen} onClose={() => setImageSearchOpen(false)} />
         </header>
     );
 }
