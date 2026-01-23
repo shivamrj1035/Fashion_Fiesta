@@ -46,15 +46,15 @@ export const useInfiniteProducts = (filters?: ProductFilters) => {
             if (filters?.search) params.append("search", filters.search);
 
             // Pagination
-            params.append("limit", "25");
-            params.append("offset", (pageParam * 25).toString());
+            params.append("limit", "24");
+            params.append("offset", (pageParam * 24).toString());
 
             const { data } = await api.get<Product[]>("/products", { params });
             return data;
         },
         getNextPageParam: (lastPage, allPages) => {
-            if (!lastPage) return undefined;
-            return lastPage.length === 25 ? allPages.length : undefined;
+            if (!lastPage || lastPage.length === 0) return undefined;
+            return lastPage.length === 24 ? allPages.length : undefined;
         },
     });
 };

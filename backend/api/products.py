@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
-from models import Product, ProductBase, Category
+from models import Product, ProductBase, Category, CategoryBase
 from database import get_session
 
 router = APIRouter(prefix="/products", tags=["products"])
@@ -41,14 +41,18 @@ async def get_products(
     results = await session.execute(query)
     return results.scalars().all()
 
+
+class CategoryRead(CategoryBase):
+    id: int
+
+@router.get("/categories", response_model=List[CategoryRead])
+async def get_categories(session: AsyncSession = Depends(get_session)):
+    results = await session.execute(select(Category))
+    return results.scalars().all()
+
 @router.get("/{product_id}", response_model=Product)
 async def get_product(product_id: int, session: AsyncSession = Depends(get_session)):
     product = await session.get(Product, product_id)
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return product
-
-@router.get("/categories", response_model=List[Category])
-async def get_categories(session: AsyncSession = Depends(get_session)):
-    results = await session.execute(select(Category))
-    return results.scalars().all()

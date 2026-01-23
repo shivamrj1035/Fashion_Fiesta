@@ -10,6 +10,7 @@ from sklearn.neighbors import NearestNeighbors
 from io import BytesIO
 from PIL import Image
 import requests
+import cv2
 from typing import List, Tuple
 
 class MLService:
@@ -54,25 +55,51 @@ class MLService:
     def extract_features_from_url(self, url: str) -> List[float]:
         try:
             response = requests.get(url, timeout=10)
-            img = Image.open(BytesIO(response.content))
-            return self.extract_features(img)
+            if response.status_code == 200:
+                return self.extract_features_from_bytes(response.content)
+            return []
         except Exception as e:
             print(f"Error extracting features from URL {url}: {e}")
             return []
 
     def extract_features_from_bytes(self, image_bytes: bytes) -> List[float]:
         try:
-            img = Image.open(BytesIO(image_bytes))
-            return self.extract_features(img)
+            # Decode image from bytes using OpenCV
+            nparr = np.frombuffer(image_bytes, np.uint8)
+            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            
+            if img is None:
+                print("Error: Could not decode image")
+                return []
+
+            # OpenCV loads as BGR, convert to RGB
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            
+            # Resize to model input size (224, 224)
+            img = cv2.resize(img, (224, 224))
+            
+            # Convert to array and expand dims
+            img_array = image.img_to_array(img)
+            expanded_img_array = np.expand_dims(img_array, axis=0)
+            
+            # Preprocess
+            preprocessed_img = preprocess_input(expanded_img_array)
+            
+            # Predict
+            result = self.model.predict(preprocessed_img).flatten()
+            normalized_result = result / norm(result)
+            
+            return normalized_result.tolist()
+            
         except Exception as e:
-            print(f"Error extracting features from bytes: {e}")
+            print(f"Error extracting features from bytes using CV2: {e}")
             return []
 
-    def find_similar_products(self, query_embedding: List[float], all_products: List[dict], k: int = 6) -> List[int]:
+    def find_similar_products(self, query_embedding: List[float], all_products: List[dict], k: int = 6) -> List[Tuple[int, float]]:
         """
         Finds k nearest neighbors for the query embedding among all_products.
         all_products should be a list of dicts/objects with 'id' and 'embedding'.
-        Returns a list of product IDs.
+        Returns a list of tuples (product_id, match_percentage).
         """
         if not all_products:
             return []
@@ -94,10 +121,16 @@ class MLService:
         
         distances, indices = neighbors.kneighbors([query_embedding])
         
-        similar_product_ids = [product_ids[i] for i in indices[0]]
-        
-        # Filter out the first one if it's the same (distance 0) - logic depends on use case
-        # For image search (upload), we want the closest ones.
-        return similar_product_ids
+        results = []
+        for i, idx in enumerate(indices[0]):
+            dist = distances[0][i]
+            # Convert Euclidean distance to Cosine Similarity for normalized vectors
+            # dist^2 = 2(1 - similarity) => similarity = 1 - dist^2 / 2
+            similarity = 1 - (dist ** 2) / 2
+            # Convert to percentage
+            score = max(0, similarity * 100)
+            results.append((product_ids[idx], round(score, 1)))
+            
+        return results
 
 ml_service = MLService()

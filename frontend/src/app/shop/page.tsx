@@ -8,9 +8,9 @@ import Image from "next/image";
 import { Search, SlidersHorizontal, LayoutGrid, LayoutList, ShoppingBag, Star, ChevronRight, Loader2, ChevronDown, X, Heart, ShoppingCart, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useInfiniteProducts, useCategories } from "@/hooks/useProducts";
-import { useInView } from "react-intersection-observer";
+import { useInView } from "react-intersection-observer"; // Keeping this import if needed later
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import ProductCard from "@/components/ProductCard";
@@ -34,6 +34,7 @@ export default function ShopPage() {
     const [showOffer, setShowOffer] = useState(true);
     const { ref: loadMoreRef, inView } = useInView();
     const searchParams = useSearchParams();
+    const router = useRouter();
 
     // Data Fetching
     const { data: categories = [], isLoading: catsLoading } = useCategories();
@@ -45,9 +46,27 @@ export default function ShopPage() {
             const foundCat = categories.find(c => c.name.toLowerCase() === catParam.toLowerCase());
             if (foundCat) {
                 setActiveCategoryId(foundCat.id);
+            } else {
+                setActiveCategoryId(null);
             }
+        } else if (!catParam) {
+            setActiveCategoryId(null);
         }
     }, [searchParams, categories]);
+
+    // Handle Category Change
+    const handleCategoryChange = (categoryId: number | null) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (categoryId === null) {
+            params.delete("category");
+        } else {
+            const cat = categories.find(c => c.id === categoryId);
+            if (cat) {
+                params.set("category", cat.name.toLowerCase());
+            }
+        }
+        router.push(`/shop?${params.toString()}`);
+    };
 
     // Debounce Search
     useEffect(() => {
@@ -56,7 +75,6 @@ export default function ShopPage() {
     }, [searchQuery]);
 
     // Data Fetching
-    // const { data: categories = [], isLoading: catsLoading } = useCategories(); // MOVED UP
     const {
         data,
         isLoading: prodsLoading,
@@ -69,13 +87,6 @@ export default function ShopPage() {
         sort_by: sortConfig.value,
         order: sortConfig.order,
     });
-
-    // Load more when scrolling to bottom (Disabled for manual load)
-    // useEffect(() => {
-    //     if (inView && hasNextPage) {
-    //         fetchNextPage();
-    //     }
-    // }, [inView, hasNextPage, fetchNextPage]);
 
     const products = data?.pages.flatMap(page => page) || [];
     const isLoading = catsLoading || prodsLoading;
@@ -122,7 +133,7 @@ export default function ShopPage() {
                                 <ul className="space-y-2">
                                     <li>
                                         <button
-                                            onClick={() => setActiveCategoryId(null)}
+                                            onClick={() => handleCategoryChange(null)}
                                             className={cn(
                                                 "w-full text-left px-4 py-2.5 rounded-lg text-xs font-bold transition-all",
                                                 activeCategoryId === null ? "bg-first-color text-white shadow-md" : "text-slate-600 hover:bg-white hover:shadow-sm"
@@ -134,7 +145,7 @@ export default function ShopPage() {
                                     {categories.map(cat => (
                                         <li key={cat.id}>
                                             <button
-                                                onClick={() => setActiveCategoryId(cat.id)}
+                                                onClick={() => handleCategoryChange(cat.id)}
                                                 className={cn(
                                                     "w-full text-left px-4 py-2.5 rounded-lg text-xs font-bold transition-all",
                                                     activeCategoryId === cat.id ? "bg-first-color text-white shadow-md" : "text-slate-600 hover:bg-white hover:shadow-sm"
