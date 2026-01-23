@@ -16,6 +16,7 @@ interface Product {
     rating: number;
     image_urls: string[];
     category_id: number;
+    match_score?: number;
 }
 
 interface ImageSearchProps {
@@ -44,19 +45,19 @@ export default function ImageSearch({ isOpen, onClose }: ImageSearchProps) {
     const handleSearch = async (file: File) => {
         setLoading(true);
         setResults([]);
-        
+
         try {
             const formData = new FormData();
             formData.append("file", file);
 
-            const response = await fetch("http://localhost:8000/api/search/image", {
-                method: "POST",
-                body: formData,
-            });
+            // Use the centralized API client which handles baseURL
+            // Endpoint is /search/image as defined in backend/api/search.py
+            const { data } = await import("@/lib/api").then(m => m.default.post<Product[]>("/search/image", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }));
 
-            if (!response.ok) throw new Error("Search failed");
-
-            const data = await response.json();
             setResults(data);
         } catch (error) {
             console.error(error);
@@ -76,7 +77,7 @@ export default function ImageSearch({ isOpen, onClose }: ImageSearchProps) {
                         onClick={onClose}
                         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                     />
-                    
+
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -101,7 +102,7 @@ export default function ImageSearch({ isOpen, onClose }: ImageSearchProps) {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                 {/* Upload Section */}
                                 <div className="md:col-span-1 space-y-6">
-                                    <div 
+                                    <div
                                         onClick={() => fileInputRef.current?.click()}
                                         className={cn(
                                             "relative aspect-[3/4] rounded-2xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center p-6 cursor-pointer hover:border-first-color hover:bg-first-color/5 transition-all group overflow-hidden bg-white",
@@ -115,13 +116,13 @@ export default function ImageSearch({ isOpen, onClose }: ImageSearchProps) {
                                             accept="image/*"
                                             onChange={handleFileSelect}
                                         />
-                                        
+
                                         {selectedImage ? (
                                             <div className="relative w-full h-full">
-                                                <Image 
-                                                    src={selectedImage} 
-                                                    alt="Preview" 
-                                                    fill 
+                                                <Image
+                                                    src={selectedImage}
+                                                    alt="Preview"
+                                                    fill
                                                     className="object-cover rounded-xl"
                                                 />
                                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -161,10 +162,10 @@ export default function ImageSearch({ isOpen, onClose }: ImageSearchProps) {
                                     ) : results.length > 0 ? (
                                         <div>
                                             <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Similar Products</h3>
-                                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4"> // Increased density
+                                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                                                 {results.map((product) => (
-                                                    <Link 
-                                                        key={product.id} 
+                                                    <Link
+                                                        key={product.id}
                                                         href={`/details/${product.id}`}
                                                         onClick={onClose}
                                                         className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-slate-100"
@@ -177,6 +178,11 @@ export default function ImageSearch({ isOpen, onClose }: ImageSearchProps) {
                                                                     fill
                                                                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                                                                 />
+                                                            )}
+                                                            {product.match_score && (
+                                                                <span className="absolute top-2 right-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm z-10">
+                                                                    {product.match_score}% Match
+                                                                </span>
                                                             )}
                                                         </div>
                                                         <div className="p-3">
