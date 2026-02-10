@@ -25,9 +25,9 @@ if USE_CLOUD_DB == "cloud" and CLOUD_URL:
         pool_recycle=300,
         pool_pre_ping=True,
         connect_args={
-            "command_timeout": 60,
+            "command_timeout": 300, # Increased to 5 mins for large data transfers
             "statement_cache_size": 0, # CRITICAL: Disable for Supabase Transaction Pooler
-            "prepared_statement_cache_size": 0, # Double check for some asyncpg versions
+            "prepared_statement_cache_size": 0,
             "server_settings": {
                 "jit": "off",
             }

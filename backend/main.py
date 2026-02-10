@@ -43,21 +43,30 @@ async def on_startup():
     
     print("🚀 Initializing ML Cache...")
     try:
+        from sqlmodel import func
         async for session in get_session():
-            # Fetch only ID and Embedding to keep memory low
-            # Try fetching the whole object if tuple selection fails
-            statement = select(Product).where(Product.embedding != None)
-            result = await session.execute(statement)
-            products = result.scalars().all()
+            # Get total count first
+            count_stmt = select(func.count(Product.id)).where(Product.embedding != None)
+            total_count = (await session.execute(count_stmt)).scalar() or 0
+            print(f"📦 Total products to cache: {total_count}")
             
-            product_data = [{"id": p.id, "embedding": p.embedding} for p in products]
-            ml_service.sync_cache(product_data)
-            break # Only need one session
+            batch_size = 1000
+            all_product_data = []
+            
+            for offset in range(0, total_count, batch_size):
+                print(f"➡️ Fetching batch: {offset} to {min(offset + batch_size, total_count)}...")
+                # Fetch only ID and Embedding to save bandwidth/memory
+                batch_stmt = select(Product.id, Product.embedding).where(Product.embedding != None).offset(offset).limit(batch_size)
+                result = await session.execute(batch_stmt)
+                batch_rows = result.all()
+                all_product_data.extend([{"id": r[0], "embedding": r[1]} for r in batch_rows])
+            
+            ml_service.sync_cache(all_product_data)
+            break
     except Exception as e:
         print(f"❌ Error during ML Cache Init: {e}")
         import traceback
         traceback.print_exc()
-        # Don't crash the whole app if ML cache fails to init
     
     print("✨ API and ML Service ready.")
 
