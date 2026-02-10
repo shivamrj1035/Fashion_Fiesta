@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useInfiniteProducts, useCategories } from "@/hooks/useProducts";
-import { useInView } from "react-intersection-observer"; // Keeping this import if needed later
+import { useInView } from "react-intersection-observer";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import ProductCard from "@/components/ProductCard";
@@ -22,7 +22,7 @@ const SORT_OPTIONS = [
     { label: "Rating", value: "rating", order: "desc" as const },
 ];
 
-export default function ShopPage() {
+function ShopContent() {
     const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
     const [gender, setGender] = useState<string | null>(null);
     const [subCategory, setSubCategory] = useState<string | null>(null);
@@ -99,15 +99,15 @@ export default function ShopPage() {
         hasNextPage,
         fetchNextPage
     } = useInfiniteProducts({
-        category_id: activeCategoryId,
-        gender: gender,
-        sub_category: subCategory,
-        search: debouncedSearch,
+        category_id: activeCategoryId || undefined,
+        gender: gender || undefined,
+        sub_category: subCategory || undefined,
+        search: debouncedSearch || undefined,
         sort_by: sortConfig.value,
-        order: sortConfig.order,
+        order: sortConfig.order
     });
 
-    // Automatic Infinite Scroll
+    // Infinite Scroll trigger
     useEffect(() => {
         if (inView && hasNextPage && !isFetchingNextPage) {
             fetchNextPage();
@@ -115,210 +115,250 @@ export default function ShopPage() {
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
     const products = data?.pages.flatMap(page => page) || [];
-    const isLoading = catsLoading || prodsLoading;
 
     return (
-        <main className="min-h-screen bg-[#020617] pt-28">
+        <main className="min-h-screen bg-slate-950 text-white selection:bg-first-color/30">
             <Navbar />
 
-            {/* Premium Header Section */}
-            <div className="relative border-b border-white/5 bg-slate-900/40 backdrop-blur-3xl py-10 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-first-color/5 via-transparent to-purple-500/5 opacity-50" />
-                <div className="container relative z-10">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                        <div className="space-y-2">
-                            <div className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.3em] text-first-color/80">
-                                <span>Neural Database</span>
-                                <div className="w-1 h-1 rounded-full bg-first-color animate-pulse" />
-                                <span className="text-slate-500">Global Sync</span>
-                            </div>
-                            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter">
-                                Infinite <span className="text-transparent bg-clip-text bg-gradient-to-r from-first-color to-emerald-400">Collections</span>
-                            </h1>
-                            <p className="text-slate-400 text-sm font-medium max-w-md leading-relaxed">
-                                Experience 5,000+ curated objects powered by computer vision and real-time neural indexing.
-                            </p>
-                        </div>
+            {/* Premium Header / Hero Section */}
+            <div className="relative pt-32 pb-16 overflow-hidden">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-first-color/10 via-transparent to-transparent opacity-50" />
 
-                        <div className="flex items-center space-x-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 bg-white/5 px-4 py-2 rounded-full border border-white/5">
-                            <Link href="/" className="hover:text-white transition-colors">Home</Link>
-                            <ChevronRight className="w-3 h-3" />
-                            <span className="text-white">Shop</span>
-                            {gender && (
-                                <>
-                                    <ChevronRight className="w-3 h-3" />
-                                    <span className="text-first-color">{gender}</span>
-                                </>
-                            )}
-                        </div>
+                <div className="container mx-auto px-4 relative z-10">
+                    <div className="flex flex-col items-center text-center space-y-6">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md"
+                        >
+                            <span className="w-2 h-2 rounded-full bg-first-color animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-first-color">Live Procurement Matrix</span>
+                        </motion.div>
+
+                        <motion.h1
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-6xl md:text-8xl font-black tracking-tighter leading-none"
+                        >
+                            THE <span className="text-first-color glass-text">FASHION</span><br />
+                            COLLECTIVE
+                        </motion.h1>
                     </div>
                 </div>
             </div>
 
-            <div className="container py-12">
-                <div className="flex flex-col lg:flex-row gap-10">
+            {/* Breadcrumbs & View Controls */}
+            <div className="container mx-auto px-4 mb-8">
+                <div className="flex flex-wrap items-center justify-between gap-4 py-6 border-y border-white/5">
+                    <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                        <Link href="/" className="hover:text-white transition-colors">Home</Link>
+                        <ChevronRight className="w-3 h-3" />
+                        <span className="text-white">Shop Archive</span>
+                        {gender && (
+                            <>
+                                <ChevronRight className="w-3 h-3" />
+                                <span className="text-first-color">{gender}</span>
+                            </>
+                        )}
+                    </div>
 
-                    {/* Sidebar Filters - Premium Glassmorphism */}
-                    <aside className="lg:w-[280px] shrink-0 space-y-8">
-                        <div className="sticky top-28 space-y-8">
-                            {/* Neural Search Input */}
-                            <div className="p-1 bg-gradient-to-b from-white/10 to-transparent rounded-[2rem]">
-                                <div className="bg-slate-900/90 backdrop-blur-xl rounded-[1.9rem] p-5 border border-white/5 space-y-4">
-                                    <h4 className="text-[10px] font-black tracking-[0.2em] uppercase text-slate-500 flex items-center justify-between">
-                                        Search Query
-                                        <Search className="w-3 h-3 text-first-color" />
-                                    </h4>
-                                    <div className="relative">
-                                        <input
-                                            type="text"
-                                            placeholder="Keywords..."
-                                            value={searchQuery}
-                                            onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-full bg-slate-800/50 border border-white/5 rounded-2xl px-4 py-3 text-xs text-white focus:ring-1 focus:ring-first-color/50 outline-none transition-all placeholder:text-slate-600 font-bold"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
+                    <div className="flex items-center gap-2 bg-slate-900/50 p-1.5 rounded-2xl border border-white/5">
+                        <button
+                            onClick={() => setViewMode("grid")}
+                            className={cn(
+                                "p-2.5 rounded-xl transition-all",
+                                viewMode === "grid" ? "bg-first-color text-white shadow-lg shadow-first-color/20" : "text-slate-500 hover:text-white"
+                            )}
+                        >
+                            <LayoutGrid className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => setViewMode("list")}
+                            className={cn(
+                                "p-2.5 rounded-xl transition-all",
+                                viewMode === "list" ? "bg-first-color text-white shadow-lg shadow-first-color/20" : "text-slate-500 hover:text-white"
+                            )}
+                        >
+                            <LayoutList className="w-4 h-4" />
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-                            {/* Category Filter */}
-                            <div className="p-1 bg-gradient-to-b from-white/5 to-transparent rounded-[2rem]">
-                                <div className="bg-slate-900/60 backdrop-blur-xl rounded-[1.9rem] p-5 border border-white/5">
-                                    <h4 className="text-[10px] font-black tracking-[0.2em] mb-6 uppercase text-slate-500">Classifications</h4>
-                                    <div className="space-y-1.5">
-                                        <button
-                                            onClick={() => updateFilters({ category: null })}
-                                            className={cn(
-                                                "w-full text-left px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all flex items-center justify-between group",
-                                                activeCategoryId === null
-                                                    ? "bg-first-color text-slate-900 shadow-[0_4px_20px_rgba(16,185,129,0.3)]"
-                                                    : "text-slate-400 hover:text-white hover:bg-white/5"
-                                            )}
-                                        >
-                                            <span>Full Index</span>
-                                            {activeCategoryId === null && <div className="w-1.5 h-1.5 rounded-full bg-slate-900" />}
-                                        </button>
+            <div className="container mx-auto px-4 pb-32">
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Sidebar Filters */}
+                    <aside className="lg:w-72 shrink-0 space-y-8">
+                        {/* Search Block */}
+                        <div className="relative group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-first-color transition-colors" />
+                            <input
+                                type="text"
+                                placeholder="Search inventory..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-slate-900/40 border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-xs font-bold focus:ring-1 focus:ring-first-color/50 focus:border-first-color/50 outline-none transition-all"
+                            />
+                        </div>
 
-                                        {catsLoading ? (
-                                            [...Array(6)].map((_, i) => <div key={i} className="h-10 bg-white/5 rounded-xl animate-pulse" />)
-                                        ) : (
-                                            categories.map(cat => (
-                                                <button
-                                                    key={cat.id}
-                                                    onClick={() => updateFilters({ category: cat.id })}
-                                                    className={cn(
-                                                        "w-full text-left px-4 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all flex items-center justify-between group",
-                                                        activeCategoryId === cat.id
-                                                            ? "bg-first-color text-slate-900 shadow-[0_4px_20px_rgba(16,185,129,0.3)]"
-                                                            : "text-slate-400 hover:text-white hover:bg-white/5"
-                                                    )}
-                                                >
-                                                    <span className="truncate">{cat.name}</span>
-                                                    {activeCategoryId === cat.id && <div className="w-1.5 h-1.5 rounded-full bg-slate-900" />}
-                                                </button>
-                                            ))
+                        {/* Gender Matrix */}
+                        <div className="p-6 bg-slate-900/40 rounded-[2rem] border border-white/5">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-6 flex items-center justify-between">
+                                Gender Matrix
+                                <span className="w-1.5 h-1.5 rounded-full bg-first-color/50" />
+                            </h3>
+                            <div className="grid grid-cols-2 gap-2">
+                                {["Men", "Women", "Boys", "Girls"].map((g) => (
+                                    <button
+                                        key={g}
+                                        onClick={() => updateFilters({ gender: gender === g ? null : g })}
+                                        className={cn(
+                                            "py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border",
+                                            gender === g
+                                                ? "bg-first-color text-white border-first-color shadow-lg shadow-first-color/20"
+                                                : "bg-slate-950 text-slate-400 border-white/5 hover:border-white/10 hover:text-white"
                                         )}
-                                    </div>
-                                </div>
+                                    >
+                                        {g}
+                                    </button>
+                                ))}
                             </div>
+                        </div>
 
-                            {/* Visual Stats */}
-                            <div className="bg-first-color/5 border border-first-color/10 rounded-[2rem] p-6 space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-first-color">Live Telemetry</span>
-                                    <div className="w-2 h-2 rounded-full bg-first-color animate-ping" />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Inference</p>
-                                        <p className="text-sm font-black text-white">12.4ms</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Load Bal</p>
-                                        <p className="text-sm font-black text-white">Optimum</p>
-                                    </div>
-                                </div>
+                        {/* Category Spectrum */}
+                        <div className="p-6 bg-slate-900/40 rounded-[2rem] border border-white/5">
+                            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-6 flex items-center justify-between">
+                                Category Spectrum
+                                <span className="w-1.5 h-1.5 rounded-full bg-first-color/50" />
+                            </h3>
+                            <div className="space-y-1">
+                                <button
+                                    onClick={() => updateFilters({ category: null })}
+                                    className={cn(
+                                        "w-full flex items-center justify-between px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                        activeCategoryId === null ? "bg-first-color text-white" : "text-slate-400 hover:bg-white/5 hover:text-white"
+                                    )}
+                                >
+                                    All Protocols
+                                    {activeCategoryId === null && <div className="w-1 h-1 rounded-full bg-white" />}
+                                </button>
+                                {categories.map((cat) => (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => updateFilters({ category: cat.id })}
+                                        className={cn(
+                                            "w-full flex items-center justify-between px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                            activeCategoryId === cat.id ? "bg-first-color text-white" : "text-slate-400 hover:bg-white/5 hover:text-white"
+                                        )}
+                                    >
+                                        {cat.name}
+                                        {activeCategoryId === cat.id && <div className="w-1 h-1 rounded-full bg-white" />}
+                                    </button>
+                                ))}
                             </div>
+                        </div>
+
+                        {/* Status Pulse */}
+                        <div className="relative overflow-hidden p-6 bg-gradient-to-br from-first-color/20 to-transparent rounded-[2rem] border border-first-color/10 group">
+                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-150 transition-transform duration-700">
+                                <ShoppingBag className="w-12 h-12" />
+                            </div>
+                            <h4 className="text-lg font-black tracking-tight mb-2">PRO-MEMBER SCAN</h4>
+                            <p className="text-[10px] text-slate-400 leading-relaxed font-bold uppercase tracking-wider mb-4">
+                                Members get 20% extra extraction bandwidth on all orders.
+                            </p>
+                            <Link href="/register" className="inline-flex items-center text-[10px] font-black text-first-color uppercase tracking-widest hover:gap-3 transition-all">
+                                Initialize Link <ChevronRight className="w-3 h-3" />
+                            </Link>
                         </div>
                     </aside>
 
                     {/* Main Content Area */}
                     <div className="flex-1 space-y-8">
                         {/* Dynamic Toolbar */}
-                        <div className="flex flex-wrap items-center justify-between p-4 bg-slate-900/40 backdrop-blur-md rounded-[2rem] border border-white/5 gap-4 relative z-[60]">
-                            <div className="flex items-center space-x-4 pl-2">
-                                <div className="flex flex-col">
-                                    <span className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] leading-none mb-1">Index Results</span>
-                                    <span className="text-sm font-black text-white">{products.length} <span className="text-[10px] text-slate-500 font-bold ml-1">Objects</span></span>
-                                </div>
-                                <div className="h-8 w-px bg-white/10 hidden md:block" />
-                                <div className="hidden md:flex items-center gap-1.5 p-1 bg-slate-950/50 rounded-xl border border-white/5">
-                                    <button
-                                        onClick={() => setViewMode("grid")}
-                                        className={cn("px-3 py-1.5 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest flex items-center gap-2", viewMode === "grid" ? "bg-first-color text-slate-900" : "text-slate-500 hover:text-slate-300")}
-                                    >
-                                        <LayoutGrid className="w-3 h-3" />
-                                        <span>Grid</span>
-                                    </button>
-                                    <button
-                                        onClick={() => setViewMode("list")}
-                                        className={cn("px-3 py-1.5 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest flex items-center gap-2", viewMode === "list" ? "bg-first-color text-slate-900" : "text-slate-500 hover:text-slate-300")}
-                                    >
-                                        <LayoutList className="w-3 h-3" />
-                                        <span>List</span>
-                                    </button>
-                                </div>
+                        <div className={cn("flex flex-wrap items-center justify-between p-4 bg-slate-900/40 backdrop-blur-md rounded-[2rem] border border-white/5 gap-4 relative z-[60]")}>
+                            <div className="flex items-center gap-4">
+                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-4 border-r border-white/10">
+                                    Displaying <span className="text-white font-black">{products.length}</span> Units
+                                </span>
+                                {debouncedSearch && (
+                                    <div className="flex items-center gap-2 bg-first-color/10 px-4 py-2 rounded-full border border-first-color/20">
+                                        <span className="text-[10px] font-black text-first-color uppercase">Query: "{debouncedSearch}"</span>
+                                        <button onClick={() => setSearchQuery("")}><X className="w-3 h-3 text-first-color" /></button>
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="flex items-center space-x-3">
-                                <div className="relative">
-                                    <button
-                                        onClick={() => setIsSortOpen(!isSortOpen)}
-                                        className={cn(
-                                            "flex items-center space-x-4 px-6 py-2.5 rounded-full border transition-all duration-500 text-[10px] font-black uppercase tracking-[0.2em]",
-                                            isSortOpen ? "bg-white text-slate-900 border-white" : "bg-slate-950/50 border-white/5 text-slate-400 hover:border-white/20"
-                                        )}
-                                    >
-                                        <span>Sort: {sortConfig.label}</span>
-                                        <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-500", isSortOpen && "rotate-180")} />
-                                    </button>
+                            <div className="relative">
+                                <button
+                                    onClick={() => setIsSortOpen(!isSortOpen)}
+                                    className="flex items-center gap-3 px-6 py-3 bg-slate-950 rounded-2xl border border-white/5 text-[10px] font-black uppercase tracking-widest hover:border-first-color/30 transition-all"
+                                >
+                                    <SlidersHorizontal className="w-3.5 h-3.5 text-first-color" />
+                                    Sort: {sortConfig.label}
+                                    <ChevronDown className={cn("w-3.5 h-3.5 text-slate-500 transition-transform", isSortOpen && "rotate-180")} />
+                                </button>
 
-                                    <AnimatePresence>
-                                        {isSortOpen && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                className="absolute right-0 top-full mt-3 w-64 bg-slate-900/95 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-3xl border border-white/10 p-2 overflow-hidden z-50"
-                                            >
-                                                {SORT_OPTIONS.map((option) => (
+                                <AnimatePresence>
+                                    {isSortOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            className="absolute right-0 top-full mt-2 w-56 bg-slate-900 rounded-2xl border border-white/10 shadow-2xl overflow-hidden z-[70] backdrop-blur-xl"
+                                        >
+                                            <div className="p-2 space-y-1">
+                                                {SORT_OPTIONS.map((opt) => (
                                                     <button
-                                                        key={`${option.label}-${option.order}`}
+                                                        key={opt.label}
                                                         onClick={() => {
-                                                            setSortConfig(option);
+                                                            setSortConfig(opt);
                                                             setIsSortOpen(false);
                                                         }}
                                                         className={cn(
-                                                            "w-full text-left px-5 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-between group",
-                                                            sortConfig.value === option.value && sortConfig.order === option.order
-                                                                ? "bg-first-color/10 text-first-color"
-                                                                : "text-slate-500 hover:bg-white/5 hover:text-white"
+                                                            "w-full text-left px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                                                            sortConfig.label === opt.label ? "bg-first-color text-white" : "text-slate-400 hover:bg-white/5 hover:text-white"
                                                         )}
                                                     >
-                                                        {option.label}
-                                                        {(sortConfig.value === option.value && sortConfig.order === option.order) && (
-                                                            <div className="w-1 h-1 rounded-full bg-first-color" />
-                                                        )}
+                                                        {opt.label}
                                                     </button>
                                                 ))}
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
                         </div>
 
                         {/* Product Grid Area */}
-                        <div className="relative">
+                        {prodsLoading && products.length === 0 ? (
+                            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                                {[...Array(12)].map((_, i) => (
+                                    <div key={i} className="aspect-[3/4] bg-slate-900/60 rounded-[2rem] border border-white/5 animate-pulse overflow-hidden">
+                                        <div className="w-full h-full bg-gradient-to-t from-slate-950 to-transparent" />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : products.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-32 text-center">
+                                <div className="w-24 h-24 bg-slate-900 rounded-full flex items-center justify-center mb-8 border border-white/5">
+                                    <Search className="w-10 h-10 text-slate-700" />
+                                </div>
+                                <h3 className="text-3xl font-black tracking-tight mb-2 uppercase">Protocol Empty</h3>
+                                <p className="text-slate-500 max-w-sm text-sm font-bold uppercase tracking-widest leading-loose">
+                                    No units found matching your current matrix configuration.
+                                </p>
+                                <button
+                                    onClick={() => {
+                                        setSearchQuery("");
+                                        updateFilters({ category: null, gender: null, sub: null });
+                                    }}
+                                    className="mt-8 text-xs font-black text-first-color uppercase tracking-[0.2em] border border-first-color/20 px-8 py-4 rounded-2xl hover:bg-first-color hover:text-white transition-all shadow-xl shadow-first-color/10"
+                                >
+                                    Reset Selection
+                                </button>
+                            </div>
+                        ) : (
                             <motion.div
                                 layout
                                 className={cn(
@@ -326,95 +366,66 @@ export default function ShopPage() {
                                     viewMode === "grid" ? "grid-cols-2 md:grid-cols-3 xl:grid-cols-4" : "grid-cols-1"
                                 )}
                             >
-                                {isLoading && products.length === 0 ? (
-                                    [...Array(6)].map((_, i) => (
-                                        <div key={i} className="bg-slate-900/40 rounded-3xl p-5 space-y-5 animate-pulse border border-white/5 aspect-[4/5]">
-                                            <div className="aspect-square bg-slate-800 rounded-2xl" />
-                                            <div className="space-y-3">
-                                                <div className="h-3 bg-slate-800 rounded-full w-3/4" />
-                                                <div className="h-3 bg-slate-800 rounded-full w-1/2" />
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <AnimatePresence mode="popLayout">
-                                        {products.map((product, index) => (
-                                            <ProductCard
-                                                key={`${product.id}-${index}`}
-                                                id={product.id}
-                                                name={product.name}
-                                                price={product.price}
-                                                oldPrice={product.old_price}
-                                                rating={product.rating}
-                                                image={product.image_urls?.[0] || ""}
-                                                description={product.description}
-                                                badge={product.is_featured ? "Featured" : product.is_popular ? "Top Rate" : undefined}
-                                                badgeColor={product.is_featured ? "first-color" : "amber-400"}
-                                                viewMode={viewMode}
-                                            />
-                                        ))}
-                                    </AnimatePresence>
-                                )}
+                                <AnimatePresence mode="popLayout">
+                                    {products.map((product) => (
+                                        <ProductCard
+                                            key={product.id}
+                                            id={product.id}
+                                            name={product.name}
+                                            price={product.price}
+                                            oldPrice={product.old_price}
+                                            rating={product.rating}
+                                            image={product.image_urls?.[0]}
+                                            description={product.description}
+                                            viewMode={viewMode}
+                                        />
+                                    ))}
+                                </AnimatePresence>
                             </motion.div>
+                        )}
 
-                            {/* No Results Fallback */}
-                            {!isLoading && products.length === 0 && (
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="flex flex-col items-center justify-center text-center py-32 space-y-6"
-                                >
-                                    <div className="w-24 h-24 bg-slate-900 rounded-full flex items-center justify-center border border-white/5 relative">
-                                        <Search className="w-10 h-10 text-slate-700" />
-                                        <div className="absolute inset-0 border-2 border-first-color/20 rounded-full animate-ping" />
+                        {/* Infinite Load Indicator */}
+                        <div ref={loadMoreRef} className="py-20 flex flex-col items-center justify-center gap-6">
+                            {(isFetchingNextPage || hasNextPage) ? (
+                                <>
+                                    <div className="relative w-12 h-12">
+                                        <div className="absolute inset-0 border-4 border-white/5 rounded-full" />
+                                        <div className="absolute inset-0 border-4 border-t-first-color rounded-full animate-spin" />
                                     </div>
-                                    <div>
-                                        <h3 className="text-2xl font-black text-white">Zero Matches Detected</h3>
-                                        <p className="text-slate-500 text-sm font-bold mt-2 max-w-sm mx-auto">Our neural engine couldn't find any objects matching your current parameters.</p>
-                                    </div>
-                                    <button
-                                        onClick={() => { setActiveCategoryId(null); setSearchQuery(""); setGender(null); }}
-                                        className="bg-first-color text-slate-900 px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-first-color/20 transition-all hover:scale-105"
-                                    >
-                                        Reset Search Engine
-                                    </button>
-                                </motion.div>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 animate-pulse">Syncing Next Chunk...</p>
+                                </>
+                            ) : products.length > 0 && (
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="h-px w-24 bg-white/5" />
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-700 italic">Terminus Reached - End of Procurement Stream</p>
+                                </div>
                             )}
-
-                            {/* Infinite Load Indicator */}
-                            <div ref={loadMoreRef} className="py-20 flex flex-col items-center justify-center space-y-4">
-                                {isFetchingNextPage ? (
-                                    <>
-                                        <div className="flex items-center space-x-1.5 h-6">
-                                            {[0, 0.1, 0.2].map((delay) => (
-                                                <motion.div
-                                                    key={delay}
-                                                    animate={{ scaleY: [0.4, 1.2, 0.4] }}
-                                                    transition={{
-                                                        duration: 1.2,
-                                                        repeat: Infinity,
-                                                        ease: "easeInOut",
-                                                        delay: delay
-                                                    }}
-                                                    className="w-1.5 h-full bg-first-color rounded-full"
-                                                />
-                                            ))}
-                                        </div>
-                                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] animate-pulse">Synchronizing Neural Data...</span>
-                                    </>
-                                ) : !hasNextPage && products.length > 0 ? (
-                                    <div className="flex flex-col items-center space-y-2 opacity-50">
-                                        <div className="w-12 h-px bg-white/10" />
-                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">End of Catalog</p>
-                                    </div>
-                                ) : null}
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <Footer />
+
+            <style jsx global>{`
+                @keyframes stretch {
+                    0% { transform: scaleX(1); opacity: 1; }
+                    50% { transform: scaleX(1.5); opacity: 0.5; }
+                    100% { transform: scaleX(1); opacity: 1; }
+                }
+            `}</style>
         </main>
+    );
+}
+
+export default function ShopPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+                <Loader2 className="w-10 h-10 animate-spin text-first-color" />
+            </div>
+        }>
+            <ShopContent />
+        </Suspense>
     );
 }
