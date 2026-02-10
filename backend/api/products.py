@@ -145,30 +145,26 @@ async def get_product_recommendations(
         results = await session.execute(query_rand)
         return results.scalars().all()
 
-    # 2. Get all other products with embeddings
-    # Since we pruned to 5k, this is efficient enough for a PoC
-    query_all = select(Product).where(Product.id != product_id).where(Product.embedding != None)
-    results_all = await session.execute(query_all)
-    all_products = results_all.scalars().all()
-
-    if not all_products:
+    # 2. Find similar products using ML service
+    # We use the in-memory cache populated on startup (sub-second performance)
+    similar_results = ml_service. find_similar_products(product.embedding, products_data=None, k=limit + 1)
+    
+    # 3. Filter out the current product and fetch full objects
+    similar_ids = [res[0] for res in similar_results if res[0] != product_id][:limit]
+    
+    if not similar_ids:
         return []
 
-    # 3. Find similar products using ML service
-    # Format as list of dicts for the service
-    products_data = [{"id": p.id, "embedding": p.embedding} for p in all_products]
-    similar_results = ml_service.find_similar_products(product.embedding, products_data, k=limit)
-    
-    # 4. Fetch the actual product objects for the similar IDs
-    similar_ids = [res[0] for res in similar_results]
+    prod_query = select(Product).where(Product.id.in_(similar_ids))
+    full_prod_res = await session.execute(prod_query)
+    full_products = full_prod_res.scalars().all()
     
     # Preserve order of similarity
+    products_map = {p.id: p for p in full_products}
     recommended_products = []
-    # Using a dictionary for fast lookup
-    product_map = {p.id: p for p in all_products}
     
-    for sid in similar_ids:
-        if sid in product_map:
-            recommended_products.append(product_map[sid])
+    for sid, score in similar_results:
+        if sid in products_map:
+            recommended_products.append(products_map[sid])
 
     return recommended_products

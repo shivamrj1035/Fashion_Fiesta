@@ -34,6 +34,21 @@ if os.path.exists(DATASET_IMAGES_PATH):
 @app.on_event("startup")
 async def on_startup():
     await init_db()
+    
+    # Sync ML Service Cache
+    from database import get_session
+    from models import Product
+    from sqlmodel import select
+    from ml_service import ml_service
+    
+    print("🚀 Initializing ML Cache...")
+    async for session in get_session():
+        # Fetch only ID and Embedding to keep memory low
+        result = await session.execute(select(Product.id, Product.embedding).where(Product.embedding != None))
+        product_data = [{"id": r.id, "embedding": r.embedding} for r in result.all()]
+        ml_service.sync_cache(product_data)
+        break # Only need one session
+    print("✨ API and ML Service ready.")
 
 app.include_router(products.router)
 app.include_router(auth.router)

@@ -11,6 +11,17 @@ from sklearn.neighbors import NearestNeighbors
 import cv2
 from typing import List, Tuple
 import io
+import math
+
+def sanitize_value(v):
+    """Recursively replaces NaN with None for JSON compatibility."""
+    if isinstance(v, float) and math.isnan(v):
+        return None
+    if isinstance(v, dict):
+        return {k: sanitize_value(val) for k, val in v.items()}
+    if isinstance(v, list):
+        return [sanitize_value(val) for val in v]
+    return v
 
 class MLService:
     _instance = None
@@ -21,6 +32,7 @@ class MLService:
             cls._instance.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
             cls._instance.model = None
             cls._instance.transform = None
+            cls._instance.product_cache = [] # In-memory cache
         return cls._instance
 
     def _ensure_initialized(self):
@@ -92,12 +104,19 @@ class MLService:
             print(f"Error extracting features from bytes: {e}")
             return []
 
-    def find_similar_products(self, query_embedding: List[float], all_products: List[dict], k: int = 24) -> List[Tuple[int, float]]:
-        if not all_products:
+    def find_similar_products(self, query_embedding: List[float], products_data: List[dict] = None, k: int = 24) -> List[Tuple[int, float]]:
+        """
+        Finds similar products. Uses product_cache if products_data is None.
+        """
+        # Prioritize provided data, fallback to cache
+        search_data = products_data if products_data is not None else self.product_cache
+        
+        if not search_data:
+            print("WARNING: No product data available for similarity search.")
             return []
 
-        # Filter out products without embeddings or with invalid embeddings
-        valid_products = [p for p in all_products if p.get('embedding') and len(p['embedding']) > 0]
+        # Filter out products without embeddings
+        valid_products = [p for p in search_data if p.get('embedding') and len(p['embedding']) > 0]
         
         if not valid_products:
             return []
@@ -110,22 +129,24 @@ class MLService:
         if len(feature_list) < k:
             k = len(feature_list)
 
-        print(f"DEBUG: Performing search on {len(feature_list)} products with k={k}")
-        
-        # NearestNeighbors is robust for 44k
+        # Efficient brute-force cosine similarity using sklearn
         neighbors = NearestNeighbors(n_neighbors=k, algorithm='brute', metric='cosine')
         neighbors.fit(feature_list)
         
         distances, indices = neighbors.kneighbors(query_vec)
-        print(f"DEBUG: Top distance: {distances[0][0]}, Top index: {indices[0][0]}")
         
         results = []
         for i, idx in enumerate(indices[0]):
-            # distance is 1 - similarity for 'cosine' metric
             similarity = 1 - distances[0][i]
             score = max(0, similarity * 100)
             results.append((product_ids[idx], round(score, 1)))
             
         return results
+
+    def sync_cache(self, all_products: List[dict]):
+        """Updates the in-memory embedding cache."""
+        print(f"🔄 Syncing {len(all_products)} products to ML cache...")
+        self.product_cache = all_products
+        print("✅ ML Cache synchronization complete.")
 
 ml_service = MLService()

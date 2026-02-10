@@ -2,16 +2,35 @@ from sqlmodel import SQLModel, create_engine, Session
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Environment Switch Configuration
-USE_CLOUD_DB = os.getenv("USE_CLOUD_DB", "false").lower() == "true"
+USE_CLOUD_DB = os.getenv("USE_CLOUD_DB", "local")
 LOCAL_URL = "sqlite+aiosqlite:///./fashion_fiesta.db"
 CLOUD_URL = os.getenv("DATABASE_URL") # This should be the postgres+asyncpg URL
-
-if USE_CLOUD_DB and CLOUD_URL:
+print(USE_CLOUD_DB)
+print(CLOUD_URL)
+if USE_CLOUD_DB == "cloud" and CLOUD_URL:
     print("🌐 Connecting to Cloud Database (Supabase)...")
     DATABASE_URL = CLOUD_URL
-    engine = create_async_engine(DATABASE_URL, echo=False, future=True)
+    # Optimized for Supabase Connection Pooler
+    engine = create_async_engine(
+        DATABASE_URL, 
+        echo=False, 
+        future=True,
+        pool_size=10,
+        max_overflow=20,
+        pool_recycle=300,
+        pool_pre_ping=True,
+        connect_args={
+            "command_timeout": 60,
+            "server_settings": {
+                "jit": "off", # Helps with some Supabase issues
+            }
+        }
+    )
 else:
     print("🏠 Connecting to Local Database (SQLite)...")
     DATABASE_URL = LOCAL_URL

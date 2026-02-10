@@ -26,18 +26,9 @@ async def search_by_image(file: UploadFile = File(...), session: AsyncSession = 
     if not query_embedding:
         raise HTTPException(status_code=400, detail="Could not process image")
 
-    # 3. Get only IDs and embeddings to save memory and time
-    # This is a bit tricky with SQLModel/SQLAlchemy async, but let's fetch only necessary columns
-    result = await session.execute(select(Product.id, Product.embedding).where(Product.embedding != None))
-    # results is a list of Row objects (id, embedding), convert to dicts for ML service
-    product_data = [{"id": r.id, "embedding": r.embedding} for r in result.all()]
-    
-    if not product_data:
-        return []
-
-    # 4. Find similar products (returns tuples of id, score)
-    # We pass the list of objects with .id and .embedding attributes
-    similar_results = ml_service.find_similar_products(query_embedding, product_data, k=24)
+    # 3. Find similar products (returns tuples of id, score)
+    # We use the in-memory cache populated on startup for sub-second performance.
+    similar_results = ml_service.find_similar_products(query_embedding, products_data=None, k=24)
     
     if not similar_results:
         return []

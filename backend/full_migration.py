@@ -2,6 +2,7 @@ import os
 import asyncio
 import sqlite3
 import httpx
+import math
 from sqlmodel import Session, select, create_engine, SQLModel, func
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -10,6 +11,16 @@ from models import Product, Category, User
 from dotenv import load_dotenv
 
 load_dotenv()
+
+def sanitize_value(v):
+    """Recursively replaces NaN with None for JSON compatibility."""
+    if isinstance(v, float) and math.isnan(v):
+        return None
+    if isinstance(v, dict):
+        return {k: sanitize_value(val) for k, val in v.items()}
+    if isinstance(v, list):
+        return [sanitize_value(val) for val in v]
+    return v
 
 # Configuration
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -75,59 +86,63 @@ async def migrate_data():
         migrated_ids = set(res.scalars().all())
         print(f"Skipping {len(migrated_ids)} products already in cloud.")
 
-        # MIGRATE PRODUCTS
+        # MIGRATE PRODUCTS IN BATCHES
         to_migrate = [p for p in local_products if p.id not in migrated_ids]
         print(f"Products remaining to migrate: {len(to_migrate)}")
 
         async with httpx.AsyncClient(timeout=60.0) as client:
-            batch_count = 0
-            for prod in to_migrate:
-                new_image_urls = []
-                # Handle Image Uploads
-                for url in prod.image_urls:
-                    if url.startswith("/dataset/images/"):
-                        img_name = url.split("/")[-1]
-                        local_path = os.path.join(LOCAL_IMAGE_DIR, img_name)
-                        if os.path.exists(local_path):
-                            cloud_url = await upload_image(client, local_path, img_name)
-                            new_image_urls.append(cloud_url if cloud_url else url)
+            batch_size = 20 # Parallel uploads
+            for i in range(0, len(to_migrate), batch_size):
+                batch = to_migrate[i:i+batch_size]
+                
+                # 1. Parallel Image Uploads
+                async def process_product(prod):
+                    new_image_urls = []
+                    for url in prod.image_urls:
+                        if url.startswith("/dataset/images/"):
+                            img_name = url.split("/")[-1]
+                            local_path = os.path.join(LOCAL_IMAGE_DIR, img_name)
+                            if os.path.exists(local_path):
+                                cloud_url = await upload_image(client, local_path, img_name)
+                                new_image_urls.append(cloud_url if cloud_url else url)
+                            else:
+                                new_image_urls.append(url)
                         else:
                             new_image_urls.append(url)
-                    else:
-                        new_image_urls.append(url)
+                    
+                    return Product(
+                        id=prod.id,
+                        name=prod.name,
+                        description=prod.description,
+                        price=prod.price,
+                        old_price=prod.old_price,
+                        rating=prod.rating,
+                        stock=prod.stock,
+                        is_featured=prod.is_featured,
+                        is_popular=prod.is_popular,
+                        is_new=prod.is_new,
+                        image_urls=new_image_urls,
+                        attributes=sanitize_value(prod.attributes),
+                        embedding=sanitize_value(prod.embedding),
+                        category_id=prod.category_id,
+                        created_at=prod.created_at
+                    )
 
-                # Prepare Remote Product
-                remote_prod = Product(
-                    id=prod.id,
-                    name=prod.name,
-                    description=prod.description,
-                    price=prod.price,
-                    old_price=prod.old_price,
-                    rating=prod.rating,
-                    stock=prod.stock,
-                    is_featured=prod.is_featured,
-                    is_popular=prod.is_popular,
-                    is_new=prod.is_new,
-                    image_urls=new_image_urls,
-                    attributes=prod.attributes,
-                    embedding=prod.embedding,
-                    category_id=prod.category_id,
-                    created_at=prod.created_at
-                )
-                remote_session.add(remote_prod)
-                
-                batch_count += 1
-                if batch_count >= 10:
-                    try:
-                        await remote_session.commit()
-                        print(f"📦 Checkpoint: Processed {prod.id}...")
-                        batch_count = 0
-                    except Exception as e:
-                        print(f"⚠️ Batch error at ID {prod.id}: {e}")
-                        await remote_session.rollback()
-                        batch_count = 0
+                # Execute batch
+                try:
+                    remote_prods = await asyncio.gather(*[process_product(p) for p in batch])
+                    for rp in remote_prods:
+                        remote_session.add(rp)
+                    
+                    await remote_session.commit()
+                    count = i + len(batch) + len(migrated_ids)
+                    print(f"📦 Progress: {count}/{len(local_products)} items synced...")
+                except Exception as e:
+                    print(f"⚠️ Batch error around items {i} to {i+batch_size}: {e}")
+                    await remote_session.rollback()
+                    # Continue to next batch
+                    continue
 
-            await remote_session.commit()
             print("✨ Migration Complete!")
 
 if __name__ == "__main__":
