@@ -290,7 +290,7 @@ function RecommendationsSection({ productId }: { productId: number }) {
                 <p className="text-slate-400 text-xs font-bold mt-2 uppercase tracking-widest">Powered by Neural Search</p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 {isLoading ? (
                     [...Array(6)].map((_, i) => (
                         <div key={i} className="space-y-4 animate-pulse">
