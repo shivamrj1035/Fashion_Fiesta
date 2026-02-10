@@ -5,25 +5,25 @@ import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin } from "luci
 
 export default function Footer() {
     return (
-        <footer className="bg-slate-900 text-slate-300 pt-20 pb-10">
-            <div className="container">
+        <footer className="bg-slate-950 text-slate-400 pt-20 pb-10 border-t border-white/5">
+            <div className="container mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     <div className="space-y-6">
                         <Link href="/" className="text-2xl font-bold tracking-tighter text-white">
-                            FASHION<span className="text-[hsl(var(--first-color))]">FIESTA</span>
+                            FASHION<span className="text-first-color">FIESTA</span>
                         </Link>
                         <p className="text-sm leading-relaxed">
                             Premium fashion destination for the modern individual. We bring you the latest trends with unmatched quality and style.
                         </p>
                         <div className="flex space-x-4">
-                            <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[hsl(var(--first-color))] transition-colors">
-                                <Facebook className="w-5 h-5 text-white" />
+                            <a href="#" className="w-10 h-10 rounded-full bg-slate-900 border border-white/5 flex items-center justify-center hover:bg-first-color transition-colors group">
+                                <Facebook className="w-5 h-5 text-slate-400 group-hover:text-white" />
                             </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[hsl(var(--first-color))] transition-colors">
-                                <Instagram className="w-5 h-5 text-white" />
+                            <a href="#" className="w-10 h-10 rounded-full bg-slate-900 border border-white/5 flex items-center justify-center hover:bg-first-color transition-colors group">
+                                <Instagram className="w-5 h-5 text-slate-400 group-hover:text-white" />
                             </a>
-                            <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-[hsl(var(--first-color))] transition-colors">
-                                <Twitter className="w-5 h-5 text-white" />
+                            <a href="#" className="w-10 h-10 rounded-full bg-slate-900 border border-white/5 flex items-center justify-center hover:bg-first-color transition-colors group">
+                                <Twitter className="w-5 h-5 text-slate-400 group-hover:text-white" />
                             </a>
                         </div>
                     </div>
@@ -31,20 +31,20 @@ export default function Footer() {
                     <div>
                         <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-xs">Quick Links</h4>
                         <ul className="space-y-4 text-sm">
-                            <li><Link href="/shop" className="hover:text-[hsl(var(--first-color))] transition-colors">New Arrivals</Link></li>
-                            <li><Link href="/shop" className="hover:text-[hsl(var(--first-color))] transition-colors">Best Sellers</Link></li>
-                            <li><Link href="/about" className="hover:text-[hsl(var(--first-color))] transition-colors">About Us</Link></li>
-                            <li><Link href="/contact" className="hover:text-[hsl(var(--first-color))] transition-colors">Store Locator</Link></li>
+                            <li><Link href="/shop" className="hover:text-first-color transition-colors">New Arrivals</Link></li>
+                            <li><Link href="/shop" className="hover:text-first-color transition-colors">Best Sellers</Link></li>
+                            <li><Link href="/about" className="hover:text-first-color transition-colors">About Us</Link></li>
+                            <li><Link href="/contact" className="hover:text-first-color transition-colors">Store Locator</Link></li>
                         </ul>
                     </div>
 
                     <div>
                         <h4 className="text-white font-bold mb-6 uppercase tracking-widest text-xs">Customer Service</h4>
                         <ul className="space-y-4 text-sm">
-                            <li><Link href="/account" className="hover:text-[hsl(var(--first-color))] transition-colors">My Account</Link></li>
-                            <li><Link href="/cart" className="hover:text-[hsl(var(--first-color))] transition-colors">Shopping Cart</Link></li>
-                            <li><Link href="/wishlist" className="hover:text-[hsl(var(--first-color))] transition-colors">Wishlist</Link></li>
-                            <li><Link href="/terms" className="hover:text-[hsl(var(--first-color))] transition-colors">Privacy Policy</Link></li>
+                            <li><Link href="/account" className="hover:text-first-color transition-colors">My Account</Link></li>
+                            <li><Link href="/cart" className="hover:text-first-color transition-colors">Shopping Cart</Link></li>
+                            <li><Link href="/wishlist" className="hover:text-first-color transition-colors">Wishlist</Link></li>
+                            <li><Link href="/terms" className="hover:text-first-color transition-colors">Privacy Policy</Link></li>
                         </ul>
                     </div>
 
@@ -55,9 +55,9 @@ export default function Footer() {
                             <input
                                 type="email"
                                 placeholder="Email address"
-                                className="bg-slate-800 border-none px-4 py-3 rounded-l-lg text-sm w-full focus:ring-1 focus:ring-[hsl(var(--first-color))] outline-none"
+                                className="bg-slate-900 border border-white/5 px-4 py-3 rounded-l-xl text-sm w-full focus:ring-1 focus:ring-first-color outline-none"
                             />
-                            <button className="bg-[hsl(var(--first-color))] text-white px-4 py-3 rounded-r-lg hover:bg-emerald-600 transition-colors">
+                            <button className="bg-first-color text-white px-5 py-3 rounded-r-xl hover:bg-emerald-600 transition-all active:scale-95">
                                 <Mail className="w-5 h-5" />
                             </button>
                         </div>
