@@ -10,8 +10,7 @@ class UserBase(SQLModel):
     is_superuser: bool = False
 
 class User(UserBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    hashed_password: str
+    id: str = Field(primary_key=True) # Clerk User ID (string)
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 class CategoryBase(SQLModel):
@@ -44,11 +43,11 @@ class Product(ProductBase, table=True):
 
 class CartItem(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="user.id")
+    user_id: str = Field(foreign_key="user.id")
     product_id: int = Field(foreign_key="product.id")
     quantity: int = Field(default=1)
 
 class WishlistItem(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="user.id")
+    user_id: str = Field(foreign_key="user.id")
     product_id: int = Field(foreign_key="product.id")

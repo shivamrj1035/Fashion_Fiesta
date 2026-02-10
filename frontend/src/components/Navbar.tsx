@@ -4,10 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Heart, Search, User, Menu, X, ChevronDown, Camera } from "lucide-react";
+import { ShoppingCart, Heart, User, Menu, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/context/AuthContext";
-import ImageSearch from "./ImageSearch";
+import { UserButton, SignInButton, useUser, useAuth as useClerkAuth } from "@clerk/nextjs";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
@@ -50,9 +49,8 @@ const NAV_LINKS = [
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [searchOpen, setSearchOpen] = useState(false);
-    const [imageSearchOpen, setImageSearchOpen] = useState(false);
-    const { user: currentUser, logout } = useAuth();
+    const { user: currentUser, isLoaded } = useUser();
+    const { signOut } = useClerkAuth();
     const pathname = usePathname();
     const { totalItems } = useCart();
     const { wishlistCount } = useWishlist();
@@ -132,20 +130,6 @@ export default function Navbar() {
 
                 {/* Actions */}
                 <div className="flex items-center space-x-3">
-                    <button
-                        onClick={() => setSearchOpen(!searchOpen)}
-                        className="p-2 text-slate-300 hover:text-white transition-all transform hover:scale-110"
-                    >
-                        <Search className="w-4.5 h-4.5" />
-                    </button>
-
-                    <button
-                        onClick={() => setImageSearchOpen(true)}
-                        className="p-2 text-slate-300 hover:text-white transition-all transform hover:scale-110"
-                        title="Search by Image"
-                    >
-                        <Camera className="w-4.5 h-4.5" />
-                    </button>
 
                     <Link href="/wishlist" className="relative p-2 text-slate-300 hover:text-white transition-all transform hover:scale-110">
                         <Heart className="w-4.5 h-4.5" />
@@ -180,31 +164,28 @@ export default function Navbar() {
                     </Link>
 
                     {currentUser ? (
-                        <div className="flex items-center gap-2 pl-2 border-l border-slate-800 ml-2">
+                        <div className="flex items-center gap-4 pl-2 border-l border-slate-800 ml-2">
                             <div className="flex flex-col items-end hidden lg:flex leading-tight">
-                                <span className="text-xs font-bold text-white">{currentUser.full_name.split(' ')[0]}</span>
+                                <span className="text-xs font-bold text-white">{currentUser.firstName || currentUser.fullName?.split(' ')[0]}</span>
                                 <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Member</span>
                             </div>
-                            <div className="group relative">
-                                <button className="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-slate-300 hover:bg-first-color hover:text-white transition-colors border border-slate-700">
-                                    <User className="w-4 h-4" />
-                                </button>
-                                {/* Dropdown */}
-                                <div className="absolute right-0 mt-2 w-48 bg-slate-800 rounded-xl shadow-2xl border border-slate-700 p-2 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all transform origin-top-right scale-95 group-hover:scale-100 z-50 backdrop-blur-xl">
-                                    <div className="px-4 py-2 border-b border-slate-700/50 mb-1 lg:hidden">
-                                        <p className="text-sm font-bold text-white truncate">{currentUser.full_name}</p>
-                                        <p className="text-xs text-slate-400 truncate">{currentUser.email}</p>
-                                    </div>
-                                    <button onClick={logout} className="w-full flex items-center gap-2 px-4 py-2 text-xs font-bold text-rose-500 hover:bg-rose-500/10 rounded-lg transition-colors uppercase tracking-wider">
-                                        Sign Out
-                                    </button>
-                                </div>
-                            </div>
+                            <UserButton
+                                appearance={{
+                                    elements: {
+                                        userButtonAvatarBox: "w-8 h-8 rounded-full border border-slate-700",
+                                        userButtonTrigger: "focus:shadow-none focus:outline-none"
+                                    }
+                                }}
+                            />
                         </div>
                     ) : (
-                        <Link href="/login" className="p-2 text-slate-300 hover:text-white transition-all transform hover:scale-110">
-                            <User className="w-4.5 h-4.5" />
-                        </Link>
+                        <div className="p-2 text-slate-300 hover:text-white transition-all transform hover:scale-110">
+                            <SignInButton mode="modal">
+                                <button>
+                                    <User className="w-4.5 h-4.5 cursor-pointer" />
+                                </button>
+                            </SignInButton>
+                        </div>
                     )}
 
                     {/* Mobile Menu Toggle */}
@@ -251,7 +232,6 @@ export default function Navbar() {
 
             </AnimatePresence>
 
-            <ImageSearch isOpen={imageSearchOpen} onClose={() => setImageSearchOpen(false)} />
         </header>
     );
 }

@@ -15,19 +15,21 @@ print(CLOUD_URL)
 if USE_CLOUD_DB == "cloud" and CLOUD_URL:
     print("🌐 Connecting to Cloud Database (Supabase)...")
     DATABASE_URL = CLOUD_URL
-    # Optimized for Supabase Connection Pooler
+    # Optimized for Supabase Connection Pooler (Transaction Mode)
     engine = create_async_engine(
         DATABASE_URL, 
         echo=False, 
         future=True,
-        pool_size=10,
-        max_overflow=20,
+        pool_size=5, # Reduced for pooler friendliness
+        max_overflow=10,
         pool_recycle=300,
         pool_pre_ping=True,
         connect_args={
             "command_timeout": 60,
+            "statement_cache_size": 0, # CRITICAL: Disable for Supabase Transaction Pooler
+            "prepared_statement_cache_size": 0, # Double check for some asyncpg versions
             "server_settings": {
-                "jit": "off", # Helps with some Supabase issues
+                "jit": "off",
             }
         }
     )

@@ -11,19 +11,23 @@ export const metadata: Metadata = {
   description: "Shop the latest fashion trends with Fashion Fiesta. Premium quality, best prices.",
 };
 
+import { ClerkProvider } from "@clerk/nextjs";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Providers>
-          {children}
-        </Providers>
-        <Toaster position="top-center" richColors />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          <Providers>
+            {children}
+          </Providers>
+          <Toaster position="top-center" richColors />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

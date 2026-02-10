@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api import products, auth, search
+from api import products, search
 from database import init_db
 
 from fastapi.staticfiles import StaticFiles
@@ -42,16 +42,26 @@ async def on_startup():
     from ml_service import ml_service
     
     print("🚀 Initializing ML Cache...")
-    async for session in get_session():
-        # Fetch only ID and Embedding to keep memory low
-        result = await session.execute(select(Product.id, Product.embedding).where(Product.embedding != None))
-        product_data = [{"id": r.id, "embedding": r.embedding} for r in result.all()]
-        ml_service.sync_cache(product_data)
-        break # Only need one session
+    try:
+        async for session in get_session():
+            # Fetch only ID and Embedding to keep memory low
+            # Try fetching the whole object if tuple selection fails
+            statement = select(Product).where(Product.embedding != None)
+            result = await session.execute(statement)
+            products = result.scalars().all()
+            
+            product_data = [{"id": p.id, "embedding": p.embedding} for p in products]
+            ml_service.sync_cache(product_data)
+            break # Only need one session
+    except Exception as e:
+        print(f"❌ Error during ML Cache Init: {e}")
+        import traceback
+        traceback.print_exc()
+        # Don't crash the whole app if ML cache fails to init
+    
     print("✨ API and ML Service ready.")
 
 app.include_router(products.router)
-app.include_router(auth.router)
 app.include_router(search.router)
 
 @app.get("/")
