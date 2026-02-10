@@ -26,12 +26,18 @@ async def search_by_image(file: UploadFile = File(...), session: AsyncSession = 
     if not query_embedding:
         raise HTTPException(status_code=400, detail="Could not process image")
 
-    # 3. Get all products with embeddings
-    result = await session.execute(select(Product))
-    products = result.scalars().all()
+    # 3. Get only IDs and embeddings to save memory and time
+    # This is a bit tricky with SQLModel/SQLAlchemy async, but let's fetch only necessary columns
+    result = await session.execute(select(Product.id, Product.embedding).where(Product.embedding != None))
+    # results is a list of Row objects (id, embedding), convert to dicts for ML service
+    product_data = [{"id": r.id, "embedding": r.embedding} for r in result.all()]
     
+    if not product_data:
+        return []
+
     # 4. Find similar products (returns tuples of id, score)
-    similar_results = ml_service.find_similar_products(query_embedding, products, k=10)
+    # We pass the list of objects with .id and .embedding attributes
+    similar_results = ml_service.find_similar_products(query_embedding, product_data, k=24)
     
     if not similar_results:
         return []
@@ -39,15 +45,18 @@ async def search_by_image(file: UploadFile = File(...), session: AsyncSession = 
     similar_ids = [r[0] for r in similar_results]
     scores_map = {r[0]: r[1] for r in similar_results}
         
-    # 5. Return the full product objects in the correct order
-    products_map = {p.id: p for p in products if p.id in similar_ids}
+    # 5. Fetch full product objects ONLY for the similar IDs
+    prod_query = select(Product).where(Product.id.in_(similar_ids))
+    full_prod_res = await session.execute(prod_query)
+    full_products = full_prod_res.scalars().all()
+    
+    products_map = {p.id: p for p in full_products}
     
     recommended_products = []
+    # Preserve the order from similar_results
     for pid, score in similar_results:
         if pid in products_map:
             prod = products_map[pid]
-            # Create a response object combining product data and score
-            # doing this carefully to compatible with SQLModel
             prod_dict = prod.dict()
             prod_dict['match_score'] = score
             recommended_products.append(ProductWithScore(**prod_dict))

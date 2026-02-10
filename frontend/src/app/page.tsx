@@ -1,41 +1,59 @@
+"use client";
+
 import Navbar from "@/components/Navbar";
 import CategorySlider from "@/components/CategorySlider";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import Footer from "@/components/Footer";
+import HeroCarousel from "@/components/HeroCarousel";
 import Link from "next/link";
+import CVTeaser from "@/components/CVTeaser";
+import { motion } from "framer-motion";
 
 export default function Home() {
   return (
     <main className="min-h-screen">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="relative h-screen min-h-[450px] flex items-center overflow-hidden bg-slate-50">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent z-10" />
-          <div className="w-full h-full bg-[url('https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070')] bg-cover bg-[center_top_0px]" />
-        </div>
+      {/* Hero Section - High Fidelity Dark Mode */}
+      <section className="relative h-[85vh] min-h-[700px] flex items-center overflow-hidden bg-slate-950">
+        <HeroCarousel />
 
-        <div className="container relative z-20">
-          <div className="max-w-xl space-y-4">
-            <span className="inline-block text-first-color font-bold tracking-widest uppercase text-[10px]">
-              Hot Promotions
-            </span>
-            <h1 className="text-5xl md:text-6xl font-black leading-tight tracking-tighter text-slate-900">
-              Fashion <span className="text-transparent bg-clip-text bg-gradient-to-r from-first-color to-emerald-500">Trending</span> <br />
-              Collection
+        <div className="container mx-auto px-4 relative z-20">
+          <div className="max-w-2xl space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 bg-white/5 backdrop-blur-md px-3 py-1 rounded-full border border-white/10"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-first-color animate-pulse" />
+              <span className="text-first-color font-black tracking-[0.2em] uppercase text-[9px]">
+                New Era of Style
+              </span>
+            </motion.div>
+
+            <h1 className="text-5xl md:text-7xl font-black leading-[0.9] tracking-tighter text-white">
+              Elevate Your <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-first-color to-emerald-400">Identity.</span>
             </h1>
-            <p className="text-sm md:text-base text-slate-600 max-w-md font-medium leading-relaxed">
-              Save more with coupons and get up to 20% off on our latest summer collection.
+
+            <p className="text-sm md:text-base text-slate-400 max-w-sm font-medium leading-relaxed">
+              Experience the fusion of high-end fashion and Neural Computer Vision. Find your style with 44k+ curated items.
             </p>
-            <div className="pt-4 flex space-x-3">
-              <Link href="/shop" className="btn-primary py-2.5 px-6 text-xs">Shop Now</Link>
+
+            <div className="pt-4 flex items-center gap-6">
+              <Link href="/shop" className="bg-first-color text-white py-3.5 px-10 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-[0_10px_30px_rgba(16,185,129,0.2)] active:scale-95">
+                Explore Collection
+              </Link>
+              <Link href="/visual-search" className="text-white py-3.5 px-6 rounded-xl text-[11px] font-black uppercase tracking-widest border border-white/10 hover:bg-white/5 transition-all">
+                Try Visual Search
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
       <CategorySlider />
+      <CVTeaser />
       <FeaturedProducts />
       <Footer />
     </main>

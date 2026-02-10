@@ -1,0 +1,45 @@
+# System Files
+.DS_Store
+Thumbs.db
+*.log
+
+# Environments
+.env
+.env.local
+.env.*.local
+venv/
+env/
+ENV/
+pycache/
+*.py[cod]
+*$py.class
+
+# Node / Frontend
+node_modules/
+.next/
+out/
+build/
+dist/
+.vercel
+.turbo
+
+# Database & AI Data
+*.db-shm
+*.db-wal
+# Small pruned DB is okay for demo, but full one should be ignored
+# fashion_fiesta.db
+
+# Media & Assets (Keep GitHub lightweight)
+backend/dataset/
+backend/static/images/
+images/
+dataset/
+*.zip
+*.tar.gz
+
+# Local IDE
+.vscode/
+.idea/
+.gemini/
+.agent/
+brain/

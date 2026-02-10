@@ -39,7 +39,7 @@
   }
 
   body {
-    @apply font-lato text-slate-800 bg-white;
+    @apply font-lato text-slate-400 bg-slate-900;
   }
 
   h1,
@@ -48,7 +48,7 @@
   h4,
   h5,
   h6 {
-    @apply font-spartan font-semibold text-slate-900 leading-tight;
+    @apply font-spartan font-semibold text-white leading-tight;
   }
 }
 

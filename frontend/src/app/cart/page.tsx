@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { useCart } from "@/context/CartContext";
 
 export default function CartPage() {
-    const { items, addToCart, removeFromCart } = useCart();
+    const { items, addToCart, removeFromCart, decrementItem } = useCart();
 
     const updateQuantity = (id: number, delta: number) => {
         // Find item to update
@@ -48,16 +48,18 @@ export default function CartPage() {
 
     if (items.length === 0) {
         return (
-            <main className="min-h-screen bg-slate-50 pt-32 pb-20">
+            <main className="min-h-screen bg-slate-900 pt-32 pb-20 text-white">
                 <Navbar />
-                <div className="container flex flex-col items-center justify-center text-center space-y-6">
-                    <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                        <ShoppingBag className="w-10 h-10 text-slate-300" />
+                <div className="container mx-auto px-4 flex flex-col items-center justify-center text-center space-y-8">
+                    <div className="w-28 h-28 bg-slate-800/50 backdrop-blur-md rounded-full flex items-center justify-center mb-4 border border-white/5">
+                        <ShoppingBag className="w-12 h-12 text-slate-500" />
                     </div>
-                    <h2 className="text-3xl font-black text-slate-900">Your cart is empty</h2>
-                    <p className="text-slate-500 max-w-sm">Looks like you haven't added anything to your cart yet. Explore our collection to find something you love.</p>
-                    <Link href="/shop" className="btn-primary mt-4">
-                        Start Shopping
+                    <div className="space-y-2">
+                        <h2 className="text-4xl font-black tracking-tighter">Cart is Offline</h2>
+                        <p className="text-slate-500 max-w-sm font-medium">Your current session has no active objects in the procurement queue.</p>
+                    </div>
+                    <Link href="/shop" className="bg-first-color text-white px-10 py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-emerald-600 transition-all shadow-xl shadow-first-color/20">
+                        Synchronize Now
                     </Link>
                 </div>
                 <Footer />
@@ -66,11 +68,11 @@ export default function CartPage() {
     }
 
     return (
-        <main className="min-h-screen bg-slate-50 pt-32">
+        <main className="min-h-screen bg-slate-900 pt-32 text-white">
             <Navbar />
 
-            <div className="container pb-20">
-                <h1 className="text-4xl font-black tracking-tighter mb-10 text-center md:text-left">Shopping Cart</h1>
+            <div className="container mx-auto px-4 pb-20">
+                <h1 className="text-5xl font-black tracking-tighter mb-12 text-center md:text-left">Procurement / Cart</h1>
 
                 <div className="flex flex-col lg:flex-row gap-12">
                     {/* Cart Items */}
@@ -81,32 +83,31 @@ export default function CartPage() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center gap-6 group hover:shadow-md transition-all"
+                                className="bg-slate-800/40 backdrop-blur-md rounded-[2.5rem] p-6 border border-white/5 flex flex-col sm:flex-row items-center gap-8 group hover:border-white/10 transition-all shadow-2xl"
                             >
-                                <div className="relative w-full sm:w-32 aspect-square rounded-2xl overflow-hidden bg-slate-50">
+                                <div className="relative w-full sm:w-32 aspect-square rounded-[1.5rem] overflow-hidden bg-slate-900 border border-white/5">
                                     {item.image_urls && item.image_urls[0] && (
                                         <Image src={item.image_urls[0]} alt={item.name} fill className="object-cover" />
                                     )}
                                 </div>
 
-                                <div className="flex-1 text-center sm:text-left">
-                                    <h3 className="text-lg font-black text-slate-900 mb-1">{item.name}</h3>
-                                    {/* <p className="text-sm font-bold text-slate-400 mb-4">{item.color} • {item.size}</p> */}
-                                    <p className="text-xl font-black text-first-color">₹{item.price}</p>
+                                <div className="flex-1 text-center sm:text-left space-y-1">
+                                    <h3 className="text-xl font-black text-white tracking-tight">{item.name}</h3>
+                                    <p className="text-2xl font-black text-first-color tracking-tighter">₹{item.price}</p>
                                 </div>
 
-                                <div className="flex items-center gap-6">
-                                    <div className="flex items-center bg-slate-50 rounded-xl p-1">
+                                <div className="flex items-center gap-8">
+                                    <div className="flex items-center bg-slate-900/50 rounded-2xl p-1.5 border border-white/5">
                                         <button
-                                            onClick={() => addToCart(item, -1)}
-                                            className="w-8 h-8 flex items-center justify-center text-slate-500 hover:bg-white hover:text-slate-900 rounded-lg transition-colors shadow-sm disabled:opacity-50"
+                                            onClick={() => decrementItem(item.id)}
+                                            className="w-10 h-10 flex items-center justify-center text-slate-400 hover:bg-white/5 hover:text-white rounded-xl transition-all disabled:opacity-20"
                                         >
                                             <Minus className="w-4 h-4" />
                                         </button>
-                                        <span className="w-10 text-center font-bold text-slate-900">{item.quantity}</span>
+                                        <span className="w-12 text-center font-black text-lg text-white">{item.quantity}</span>
                                         <button
                                             onClick={() => addToCart(item)}
-                                            className="w-8 h-8 flex items-center justify-center text-slate-500 hover:bg-white hover:text-slate-900 rounded-lg transition-colors shadow-sm"
+                                            className="w-10 h-10 flex items-center justify-center text-slate-400 hover:bg-white/5 hover:text-white rounded-xl transition-all"
                                         >
                                             <Plus className="w-4 h-4" />
                                         </button>
@@ -114,7 +115,7 @@ export default function CartPage() {
 
                                     <button
                                         onClick={() => removeFromCart(item.id)}
-                                        className="w-10 h-10 flex items-center justify-center text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-full transition-all"
+                                        className="w-12 h-12 flex items-center justify-center text-slate-600 hover:text-rose-500 hover:bg-rose-500/10 rounded-2xl transition-all border border-transparent hover:border-rose-500/20"
                                     >
                                         <Trash2 className="w-5 h-5" />
                                     </button>
@@ -125,36 +126,36 @@ export default function CartPage() {
 
                     {/* Order Summary */}
                     <div className="lg:w-1/3">
-                        <div className="bg-white rounded-[2rem] p-8 shadow-lg border border-slate-100 sticky top-32">
-                            <h3 className="text-xl font-black tracking-tight mb-8">Order Summary</h3>
+                        <div className="bg-slate-950/50 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/5 sticky top-32 shadow-2xl">
+                            <h3 className="text-2xl font-black tracking-tight mb-8">Summary / Cluster</h3>
 
-                            <div className="space-y-4 mb-8">
-                                <div className="flex justify-between text-sm font-bold text-slate-500">
-                                    <span>Subtotal</span>
-                                    <span className="text-slate-900">₹{subtotal}</span>
+                            <div className="space-y-4 mb-10">
+                                <div className="flex justify-between text-xs font-black uppercase tracking-widest text-slate-500">
+                                    <span>Procurement Subtotal</span>
+                                    <span className="text-white">₹{subtotal}</span>
                                 </div>
-                                <div className="flex justify-between text-sm font-bold text-slate-500">
-                                    <span>Shipping Estimate</span>
-                                    <span className="text-slate-900">₹{shipping}</span>
+                                <div className="flex justify-between text-xs font-black uppercase tracking-widest text-slate-500">
+                                    <span>Logistics Estimate</span>
+                                    <span className="text-white">₹{shipping}</span>
                                 </div>
-                                <div className="flex justify-between text-sm font-bold text-slate-500">
-                                    <span>Tax Estimate</span>
-                                    <span className="text-slate-900">₹0</span>
+                                <div className="flex justify-between text-xs font-black uppercase tracking-widest text-slate-500">
+                                    <span>Tax Allocation</span>
+                                    <span className="text-white">₹0</span>
                                 </div>
-                                <div className="pt-4 border-t border-slate-100 flex justify-between text-lg font-black text-slate-900">
-                                    <span>Order Total</span>
-                                    <span className="text-first-color">₹{total}</span>
+                                <div className="pt-6 border-t border-white/10 flex justify-between items-end">
+                                    <span className="text-xs font-black uppercase tracking-[0.3em] text-slate-500 mb-1">Final Delta</span>
+                                    <span className="text-4xl font-black text-first-color tracking-tighter">₹{total}</span>
                                 </div>
                             </div>
 
-                            <button className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-first-color transition-all shadow-xl hover:shadow-2xl flex items-center justify-center group">
-                                Checkout
-                                <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />
+                            <button className="w-full bg-first-color text-white font-black uppercase tracking-[0.2em] py-5 rounded-2xl hover:bg-emerald-600 transition-all shadow-[0_10px_30px_rgba(16,185,129,0.3)] flex items-center justify-center group text-sm active:scale-95">
+                                Initialize Checkout
+                                <ArrowRight className="w-5 h-5 ml-3 transition-transform group-hover:translate-x-2" />
                             </button>
 
-                            <div className="mt-8 flex items-center justify-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                <ShieldCheck className="w-4 h-4" />
-                                <span>Secure Checkout</span>
+                            <div className="mt-10 flex items-center justify-center gap-3 text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">
+                                <ShieldCheck className="w-4 h-4 text-first-color" />
+                                <span>Neural Encryption Active</span>
                             </div>
                         </div>
                     </div>

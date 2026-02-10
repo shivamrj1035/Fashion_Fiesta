@@ -36,6 +36,16 @@ export default function ProductCard({
     const { addToCart, items } = useCart();
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
+    // Helper to format image URL
+    const getImageUrl = (url: string) => {
+        if (!url) return "/placeholder.jpg";
+        if (url.startsWith("http")) return url;
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        return `${baseUrl}${url}`;
+    };
+
+    const displayImage = getImageUrl(image);
+
     const isInCart = (id: number) => items.some(item => item.id === id);
 
     const productForContext = {
@@ -44,40 +54,39 @@ export default function ProductCard({
         price,
         old_price: oldPrice,
         rating,
-        image_urls: [image],
+        image_urls: [displayImage],
         description
     };
 
     return (
         <motion.div
             layout
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.3 }}
             className={cn(
-                "group bg-white rounded-3xl overflow-hidden border border-slate-100 hover:shadow-xl transition-all duration-300 relative",
+                "group bg-slate-800/40 backdrop-blur-md rounded-2xl overflow-hidden border border-white/5 hover:border-first-color/30 hover:shadow-[0_0_30px_rgba(16,185,129,0.05)] transition-all duration-500 relative",
                 viewMode === "list" && "flex flex-col md:flex-row"
             )}
         >
             <div className={cn(
-                "relative overflow-hidden block bg-slate-100 group",
+                "relative overflow-hidden block bg-slate-50 group",
                 viewMode === "list" ? "md:w-64 aspect-square shrink-0" : "w-full aspect-[4/5]"
             )}>
                 <Link href={`/details/${id}`} className="block w-full h-full">
                     <Image
-                        src={image}
+                        src={displayImage}
                         alt={name}
                         fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"
                     />
                 </Link>
 
-                {/* Badge */}
+                {/* Badge - More Compact */}
                 {badge && (
                     <span className={cn(
-                        "absolute top-3 left-3 text-white text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-md z-10",
+                        "absolute top-2.5 left-2.5 text-white text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg shadow-sm z-10",
                         badgeColor === "first-color" && "bg-first-color",
                         badgeColor === "amber-400" && "bg-amber-400",
                         badgeColor === "rose-500" && "bg-rose-500",
@@ -87,23 +96,17 @@ export default function ProductCard({
                     </span>
                 )}
 
-                {/* Toolbox Overlay - Over Image */}
-                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-4 z-20 pointer-events-none">
-                    {/* View Button */}
+                {/* Toolbox Overlay - Refined Icons */}
+                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2 z-20 pointer-events-none">
                     <div className="relative group/btn pointer-events-auto">
                         <Link
                             href={`/details/${id}`}
-                            className="bg-white p-3 rounded-full shadow-lg text-slate-700 hover:bg-first-color hover:text-white transition-all transform hover:scale-110 flex items-center justify-center"
+                            className="bg-white/95 backdrop-blur-sm p-2.5 rounded-xl shadow-lg text-slate-700 hover:bg-slate-900 hover:text-white transition-all transform hover:scale-110 flex items-center justify-center"
                         >
-                            <Eye className="w-5 h-5" />
+                            <Eye className="w-4 h-4" />
                         </Link>
-                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-[10px] font-bold text-white bg-slate-900 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                            View
-                            <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></span>
-                        </span>
                     </div>
 
-                    {/* Wishlist Button */}
                     <div className="relative group/btn pointer-events-auto">
                         <button
                             onClick={(e) => {
@@ -116,19 +119,14 @@ export default function ProductCard({
                                 }
                             }}
                             className={cn(
-                                "bg-white p-3 rounded-full shadow-lg transition-all transform hover:scale-110 flex items-center justify-center hover:bg-first-color hover:text-white",
+                                "bg-white/95 backdrop-blur-sm p-2.5 rounded-xl shadow-lg transition-all transform hover:scale-110 flex items-center justify-center hover:bg-slate-900 hover:text-white",
                                 isInWishlist(id) ? "text-first-color" : "text-slate-700"
                             )}
                         >
-                            <Heart className={cn("w-5 h-5", isInWishlist(id) && "fill-current")} />
+                            <Heart className={cn("w-4 h-4", isInWishlist(id) && "fill-current")} />
                         </button>
-                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-[10px] font-bold text-white bg-slate-900 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                            {isInWishlist(id) ? "Remove from Wishlist" : "Add to Wishlist"}
-                            <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></span>
-                        </span>
                     </div>
 
-                    {/* Add to Cart Button */}
                     <div className="relative group/btn pointer-events-auto">
                         <button
                             onClick={(e) => {
@@ -137,51 +135,40 @@ export default function ProductCard({
                                 addToCart(productForContext as any);
                             }}
                             className={cn(
-                                "bg-white p-3 rounded-full shadow-lg transition-all transform hover:scale-110 flex items-center justify-center hover:bg-first-color hover:text-white",
-                                isInCart(id) ? "text-first-color" : "text-slate-700"
+                                "bg-slate-900/95 backdrop-blur-sm p-2.5 rounded-xl shadow-lg transition-all transform hover:scale-110 flex items-center justify-center hover:bg-first-color hover:text-white border border-white/5",
+                                isInCart(id) ? "text-first-color" : "text-white"
                             )}
                         >
-                            <ShoppingBag className={cn("w-5 h-5", isInCart(id) && "fill-current")} />
+                            <ShoppingBag className={cn("w-4 h-4", isInCart(id) && "fill-current")} />
                         </button>
-                        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-[10px] font-bold text-white bg-slate-900 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
-                            Add to Cart
-                            <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900"></span>
-                        </span>
                     </div>
                 </div>
             </div>
 
-            <div className={cn("p-5", viewMode === "list" ? "flex-1 flex flex-col justify-center p-6" : "")}>
-                <div className="flex items-center space-x-1 mb-2">
+            <div className={cn("p-4", viewMode === "list" ? "flex-1 flex flex-col justify-center p-6" : "")}>
+                <div className="flex items-center space-x-0.5 mb-1.5 opacity-80">
                     {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={cn("w-3 h-3", i < Math.floor(rating) ? "text-amber-400 fill-amber-400" : "text-slate-200")} />
+                        <Star key={i} className={cn("w-2.5 h-2.5", i < Math.floor(rating) ? "text-amber-400 fill-amber-400" : "text-slate-700")} />
                     ))}
-                    <span className="text-[10px] font-bold text-slate-400 ml-1">({rating})</span>
+                    <span className="text-[9px] font-bold text-slate-500 ml-1">({rating})</span>
                 </div>
 
                 <Link href={`/details/${id}`}>
-                    <h3 className="text-sm font-bold text-slate-800 group-hover:text-first-color transition-colors mb-1 line-clamp-1">
+                    <h3 className="text-xs font-bold text-white group-hover:text-first-color transition-colors mb-0.5 line-clamp-1 leading-snug">
                         {name}
                     </h3>
                 </Link>
 
-                {viewMode === "list" && description && (
-                    <p className="text-xs text-slate-500 mb-4 line-clamp-2">
-                        {description}
-                    </p>
-                )}
-
                 <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center space-x-2">
-                        <span className="text-lg font-black text-slate-900">₹{price}</span>
-                        {oldPrice && <span className="text-xs text-slate-400 line-through">₹{oldPrice}</span>}
+                    <div className="flex items-baseline gap-1.5">
+                        <span className="text-base font-black text-white">₹{price}</span>
+                        {oldPrice && <span className="text-[10px] text-slate-500 line-through font-medium">₹{oldPrice}</span>}
                     </div>
-                    {/* Small action button for mobile or redundant quick action */}
                     <button
                         onClick={() => addToCart(productForContext as any)}
-                        className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-600 hover:bg-first-color hover:text-white transition-all shadow-sm"
+                        className="w-7 h-7 bg-white/5 rounded-lg flex items-center justify-center text-slate-400 hover:bg-first-color hover:text-white transition-all shadow-sm border border-white/5"
                     >
-                        <ShoppingBag className="w-3.5 h-3.5" />
+                        <ShoppingBag className="w-3 h-3" />
                     </button>
                 </div>
             </div>

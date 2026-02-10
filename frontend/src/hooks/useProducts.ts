@@ -24,12 +24,14 @@ export interface Category {
 }
 
 export interface ProductFilters {
-    category_id?: number | null; // Allow null
+    category_id?: number | null;
+    gender?: string | null;
+    sub_category?: string | null;
     min_price?: number;
     max_price?: number;
     sort_by?: string;
     order?: "asc" | "desc";
-    search?: string; // Client-side filtering mostly for now
+    search?: string;
 }
 
 export const useInfiniteProducts = (filters?: ProductFilters) => {
@@ -39,6 +41,8 @@ export const useInfiniteProducts = (filters?: ProductFilters) => {
         queryFn: async ({ pageParam = 0 }) => {
             const params = new URLSearchParams();
             if (filters?.category_id) params.append("category_id", filters.category_id.toString());
+            if (filters?.gender) params.append("gender", filters.gender);
+            if (filters?.sub_category) params.append("sub_category", filters.sub_category);
             if (filters?.min_price) params.append("min_price", filters.min_price.toString());
             if (filters?.max_price) params.append("max_price", filters.max_price.toString());
             if (filters?.sort_by) params.append("sort_by", filters.sort_by);
@@ -77,5 +81,46 @@ export const useCategories = () => {
             const { data } = await api.get<Category[]>("/products/categories");
             return data;
         },
+    });
+};
+
+export const useFeaturedProducts = (limit = 8) => {
+    return useQuery({
+        queryKey: ["products", "featured", limit],
+        queryFn: async () => {
+            const { data } = await api.get<Product[]>("/products/featured", { params: { limit } });
+            return data;
+        },
+    });
+};
+
+export const usePopularProducts = (limit = 8) => {
+    return useQuery({
+        queryKey: ["products", "popular", limit],
+        queryFn: async () => {
+            const { data } = await api.get<Product[]>("/products/popular", { params: { limit } });
+            return data;
+        },
+    });
+};
+
+export const useNewArrivals = (limit = 8) => {
+    return useQuery({
+        queryKey: ["products", "new-arrivals", limit],
+        queryFn: async () => {
+            const { data } = await api.get<Product[]>("/products/new-arrivals", { params: { limit } });
+            return data;
+        },
+    });
+};
+
+export const useRecommendations = (id: number, limit = 6) => {
+    return useQuery({
+        queryKey: ["products", "recommendations", id, limit],
+        queryFn: async () => {
+            const { data } = await api.get<Product[]>(`/products/${id}/recommendations`, { params: { limit } });
+            return data;
+        },
+        enabled: !!id,
     });
 };
