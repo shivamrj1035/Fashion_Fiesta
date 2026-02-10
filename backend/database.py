@@ -3,14 +3,18 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 import os
 
-# For development, we use SQLite. For production, we use Supabase PostgreSQL.
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./fashion_fiesta.db")
+# Environment Switch Configuration
+USE_CLOUD_DB = os.getenv("USE_CLOUD_DB", "false").lower() == "true"
+LOCAL_URL = "sqlite+aiosqlite:///./fashion_fiesta.db"
+CLOUD_URL = os.getenv("DATABASE_URL") # This should be the postgres+asyncpg URL
 
-# Use a different engine configuration for Postgres vs SQLite
-if DATABASE_URL.startswith("postgresql"):
-    # Asyncpg is preferred for PostgreSQL with SQLModel/SQLAlchemy
+if USE_CLOUD_DB and CLOUD_URL:
+    print("🌐 Connecting to Cloud Database (Supabase)...")
+    DATABASE_URL = CLOUD_URL
     engine = create_async_engine(DATABASE_URL, echo=False, future=True)
 else:
+    print("🏠 Connecting to Local Database (SQLite)...")
+    DATABASE_URL = LOCAL_URL
     engine = create_async_engine(DATABASE_URL, echo=True, future=True)
 
 async def init_db():

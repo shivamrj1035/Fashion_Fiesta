@@ -13,6 +13,8 @@ ENV/
 pycache/
 *.py[cod]
 *$py.class
+fashion_fiesta.db
+fashion_fiesta.sqbpro
 
 # Node / Frontend
 node_modules/
