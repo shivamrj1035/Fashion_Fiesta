@@ -24,6 +24,7 @@ coverage.xml
 # Project Specific
 backend/fashion_fiesta.db
 backend/fashion_fiesta.db-journal
+backend/dataset/images
 *.db
 *.sqlite3
 

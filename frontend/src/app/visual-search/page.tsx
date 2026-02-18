@@ -204,12 +204,12 @@ export default function VisualSearchPage() {
                                     >
                                         Neural Hub
                                     </button>
-                                    <button
+                                    {/* <button
                                         onClick={() => setActiveTab('similar')}
                                         className={cn("px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all", activeTab === 'similar' ? "bg-first-color text-white shadow-lg shadow-first-color/20" : "text-slate-500 hover:text-white hover:bg-white/5")}
                                     >
                                         High Conf.
-                                    </button>
+                                    </button> */}
                                 </div>
                                 <div className="flex items-center gap-6">
                                     <div className="flex flex-col items-end">

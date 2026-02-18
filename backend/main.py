@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from api import products, search
 from database import init_db
@@ -31,8 +32,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-if os.path.exists(DATASET_IMAGES_PATH):
+if os.path.exists(DATASET_IMAGES_PATH) and os.path.isdir(DATASET_IMAGES_PATH):
+    print(f"📁 Mounting local images from: {DATASET_IMAGES_PATH}")
     app.mount("/dataset/images", StaticFiles(directory=DATASET_IMAGES_PATH), name="dataset-images")
+elif DATASET_PATH.startswith("http"):
+    print(f"☁️  Redirecting /dataset/images to: {DATASET_PATH}")
+    @app.get("/dataset/images/{image_path:path}")
+    async def redirect_dataset_images(image_path: str):
+        return RedirectResponse(url=f"{DATASET_PATH.rstrip('/')}/{image_path}")
+else:
+    print(f"⚠️  DATASET_PATH not found or invalid: {DATASET_PATH}")
 
 @app.on_event("startup")
 async def on_startup():
